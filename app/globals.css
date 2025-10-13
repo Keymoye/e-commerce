@@ -3,9 +3,9 @@
 @theme {
   --color-background: #3e1e68;
   --color-foreground: #f9f9fb;
-  --color-purple: #5d2f77;
-  --color-pink: #e45a92;
-  --color-soft: #ffacac;
+  --color-primary: #5d2f77;
+  --color-secondary: #e45a92;
+  --color-accent: #ffacac;
 }
 
 body {

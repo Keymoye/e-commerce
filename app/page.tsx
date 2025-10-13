@@ -1,7 +1,17 @@
-export default function Home() {
+"use client";
+import ProductCard from "@/components/ui/productCard";
+import { useProducts } from "@/hooks/useProducts";
+
+export default function HomePage() {
+  const { data: products, loading } = useProducts();
+
+  if (loading) return <div>Loading...</div>;
+
   return (
-    <>
-      <h1 className="text-background">Welcome to the E-commerce Store</h1>
-    </>
+    <main className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
+      {products.map((p) => (
+        <ProductCard key={p.id} product={p} />
+      ))}
+    </main>
   );
 }

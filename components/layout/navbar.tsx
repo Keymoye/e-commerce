@@ -25,22 +25,22 @@ export default function NavBar() {
         {/* Brand */}
         <Link
           href="/"
-          className="text-2xl font-extrabold tracking-wide text-foreground hover:text-soft transition-colors"
+          className="text-2xl font-extrabold tracking-wide hover:text-accent transition-colors"
         >
           keystore
         </Link>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex gap-8 items-center text-foreground">
+        <ul className="hidden md:flex gap-8 items-center">
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="relative px-3 py-2 rounded-lg text-base font-medium transition-all hover:text-pink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-soft"
+                className="relative px-3 py-2 rounded-lg text-base font-medium transition-all hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {link.label}
                 <motion.span
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-pink origin-left scale-x-0"
+                  className="absolute bottom-0 left-0 w-full h-0.5 bg-accent origin-left scale-x-0"
                   whileHover={{ scaleX: 1 }}
                   transition={{ duration: 0.3 }}
                 />
@@ -52,7 +52,7 @@ export default function NavBar() {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-foreground p-2 rounded focus-visible:ring-2 focus-visible:ring-soft"
+          className="md:hidden p-2 rounded focus-visible:ring-2 focus-visible:ring-accent"
           aria-label="Toggle menu"
         >
           {isOpen ? <FiX size={26} /> : <FiMenu size={26} />}
@@ -68,15 +68,15 @@ export default function NavBar() {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden bg-purple/95 backdrop-blur-sm"
+            className="md:hidden bg-background/95 backdrop-blur-sm"
           >
-            <ul className="flex flex-col items-center py-4 space-y-4 text-foreground">
+            <ul className="flex flex-col items-center py-4 space-y-4">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="block text-lg font-medium hover:text-pink transition-colors"
+                    className="block text-lg font-medium hover:text-accent transition-colors"
                   >
                     {link.label}
                   </Link>

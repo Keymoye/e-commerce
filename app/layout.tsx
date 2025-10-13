@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import NavBar from "../components/navbar";
+import NavBar from "../components/layout/navbar";
+import Footer from "../components/layout/footer";
 
 export const metadata: Metadata = {
   title: "keystore",
-  description: "An e commerce store built with Next.js",
+  description: "An e-commerce store built with Next.js",
 };
 
 export default function RootLayout({
@@ -14,9 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-background text-foreground min-h-screen flex flex-col font-sans">
         <NavBar />
-        {children}
+        <main className="flex-grow container mx-auto p-4">{children}</main>
+        <Footer />
       </body>
     </html>
   );
