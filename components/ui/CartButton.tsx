@@ -30,7 +30,7 @@ export default function CartButton({ onAdd }: CartButtonProps) {
           <motion.button
             key="add"
             onClick={handleAdd}
-            className="flex items-center justify-center gap-2 w-full bg-secondary text-background py-2 rounded-lg hover:bg-secondary/90 transition font-medium"
+            className="flex items-center justify-center gap-2 w-full bg-secondary text-background py-2 rounded-lg hover:bg-accent transition font-medium"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -48,11 +48,11 @@ export default function CartButton({ onAdd }: CartButtonProps) {
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <button onClick={handleSub} className="hover:text-gray-200">
+            <button onClick={handleSub} className="hover:text-foreground">
               <FaMinus />
             </button>
             <span>{quantity}</span>
-            <button onClick={handleAdd} className="hover:text-gray-200">
+            <button onClick={handleAdd} className="hover:text-foreground">
               <FaPlus />
             </button>
           </motion.div>

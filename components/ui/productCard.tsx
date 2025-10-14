@@ -28,7 +28,7 @@ export default function ProductCard({ product }: { product: Product }) {
           onClick={() => toggleWishlist(product)}
           aria-pressed={inWishlist}
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute top-2 right-2 p-2 bg-foreground/80 rounded-full"
+          className="absolute top-2 right-2 p-2 rounded-full bg-accent hover:bg-secondary transition-colors "
         >
           <FaHeart
             className={`transition-colors ${
@@ -50,11 +50,23 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* PRICE + RATING */}
       <div className="mt-3 flex items-center justify-between">
         <StarRating rating={product.rating} />
-        <div>
-          <div className="text-lg font-bold">${product.price.toFixed(2)}</div>
+        <div className="px-4">
+          <div className="text-3xl font-bold">${product.price.toFixed(2)}</div>
           <div className="text-xs text-accent">Stock: {product.stock}</div>
         </div>
       </div>
+      {product.tags && product.tags.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {product.tags.map((tag) => (
+            <span
+              key={tag}
+              className="px-2 py-1 text-xs bg-secondary/20 text-accent rounded-full"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* CART BUTTON */}
       <div className="mt-3">

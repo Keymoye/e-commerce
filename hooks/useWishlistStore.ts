@@ -1,4 +1,3 @@
-// src/store/wishlistStore.ts
 import { create } from "zustand";
 import { Product } from "@/types/product";
 
