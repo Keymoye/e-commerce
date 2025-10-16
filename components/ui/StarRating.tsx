@@ -1,43 +1,35 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import { ReactElement } from "react";
+import { ReactElement, memo } from "react";
 
 type StarRatingProps = {
-  rating: number; // rating out of 5
+  rating: number;
 };
 
-export default function StarRating({ rating }: StarRatingProps) {
-  // 🔒 Clamp the rating between 0 and 5
-  function clampRating(raw: number) {
-    if (!Number.isFinite(raw)) return 0;
-    return Math.max(0, Math.min(5, raw));
-  }
+function StarRatingBase({ rating }: StarRatingProps) {
+  const clamp = (val: number) => Math.max(0, Math.min(5, val || 0));
+  const r = clamp(rating);
+  const full = Math.floor(r);
+  const half = r - full >= 0.5;
+  const empty = 5 - full - (half ? 1 : 0);
 
-  const safeRating = clampRating(rating);
-  const fullStars = Math.floor(safeRating);
-  const fractional = safeRating - fullStars;
-
-  // 🧮 Handle small floating point errors like 4.499999
-  const hasHalfStar = fractional >= 0.5 - 1e-9;
-  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-  // 🌟 Create stars dynamically
   const stars: ReactElement[] = [];
+  for (let i = 0; i < full; i++) stars.push(<FaStar key={`f-${i}`} />);
+  if (half) stars.push(<FaStarHalfAlt key="half" />);
+  for (let i = 0; i < empty; i++) stars.push(<FaRegStar key={`e-${i}`} />);
 
-  // full stars
-  for (let i = 0; i < fullStars; i++) {
-    stars.push(<FaStar key={`full-${i}`} />);
-  }
-
-  // half star
-  if (hasHalfStar) {
-    stars.push(<FaStarHalfAlt key="half" />);
-  }
-
-  // empty stars
-  for (let i = 0; i < emptyStars; i++) {
-    stars.push(<FaRegStar key={`empty-${i}`} />);
-  }
-
-  // ✅ Return JSX here
-  return <div className="flex items-center text-yellow-500">{stars}</div>;
+  return (
+    <motion.div
+      className="flex items-center text-yellow-500"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.1 }}
+    >
+      {stars}
+    </motion.div>
+  );
 }
+
+export default memo(StarRatingBase);

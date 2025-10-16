@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
+import CartLink from "@/components/ui/cartLink";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,7 +13,6 @@ export default function NavBar() {
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
     { href: "/categories", label: "Categories" },
-    { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ];
 
@@ -47,6 +47,11 @@ export default function NavBar() {
               </Link>
             </li>
           ))}
+
+          {/* 🛒 Dynamic Cart Link */}
+          <li>
+            <CartLink />
+          </li>
         </ul>
 
         {/* Mobile Menu Button */}
@@ -82,6 +87,11 @@ export default function NavBar() {
                   </Link>
                 </li>
               ))}
+
+              {/* 🛒 Mobile Cart Link */}
+              <li>
+                <CartLink onClick={() => setIsOpen(false)} />
+              </li>
             </ul>
           </motion.div>
         )}
