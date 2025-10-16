@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { Product } from "@/types/product";
-import { useWishlistStore } from "@/hooks/useWishlistStore";
+import { WishlistStore } from "@/store/wishlistStore";
 import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
 import CartButton from "@/components/ui/CartButton";
 
 export default function ProductCard({ product }: { product: Product }) {
-  const { toggleWishlist, isWishlisted } = useWishlistStore();
+  const { toggleWishlist, isWishlisted } = WishlistStore();
   const inWishlist = isWishlisted(product.id);
 
   return (
