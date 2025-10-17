@@ -6,13 +6,14 @@ import Link from "next/link";
 import { FaTrash, FaShoppingCart, FaHeartBroken } from "react-icons/fa";
 import { WishlistStore } from "@/store/wishlistStore";
 import { CartStore } from "@/store/cartStore";
+import { useToast } from "@/components/ui/toast";
 
 export default function WishlistPage() {
   const items = WishlistStore((s) => s.items);
   const removeItem = WishlistStore((s) => s.removeItem);
   const clear = WishlistStore((s) => s.clear);
-
   const addToCart = CartStore((s) => s.addItem);
+  const { toast } = useToast();
 
   if (items.length === 0)
     return (
@@ -30,12 +31,40 @@ export default function WishlistPage() {
       </div>
     );
 
+  const handleAddToCart = (item: any) => {
+    addToCart(item, 1);
+    removeItem(item.id);
+
+    toast({
+      title: "Moved to cart 🛒",
+      description: `${item.name} has been added to your cart.`,
+    });
+  };
+
+  const handleRemove = (id: string) => {
+    removeItem(id);
+    toast({
+      title: "Removed 💔",
+      description: "Item removed from your wishlist.",
+      variant: "destructive",
+    });
+  };
+
+  const handleClear = () => {
+    clear();
+    toast({
+      title: "Wishlist cleared 🧹",
+      description: "All items have been removed.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <section className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Your Wishlist</h2>
         <button
-          onClick={clear}
+          onClick={handleClear}
           aria-label="Clear wishlist"
           className="text-sm bg-secondary text-background px-3 py-2 rounded-lg hover:bg-accent transition"
         >
@@ -64,7 +93,7 @@ export default function WishlistPage() {
                   className="object-contain w-full h-48 rounded-lg"
                 />
                 <button
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => handleRemove(item.id)}
                   aria-label="Remove from wishlist"
                   className="absolute top-2 right-2 bg-accent p-2 rounded-full text-background hover:bg-red-500 transition-colors"
                 >
@@ -84,11 +113,11 @@ export default function WishlistPage() {
 
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                onClick={() => addToCart(item, 1)}
+                onClick={() => handleAddToCart(item)}
                 className="mt-4 flex items-center justify-center gap-2 w-full bg-secondary text-background py-2 rounded-lg hover:bg-accent transition"
               >
                 <FaShoppingCart />
-                Add to Cart
+                Move to Cart
               </motion.button>
             </motion.div>
           ))}

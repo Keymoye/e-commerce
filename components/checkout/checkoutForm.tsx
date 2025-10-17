@@ -20,7 +20,9 @@ type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutForm() {
   const { toast } = useToast();
-  const { items, total, clear } = CartStore();
+  const items = CartStore((s) => s.items);
+  const total = CartStore((s) => s.total);
+  const clear = CartStore((s) => s.clear);
 
   const {
     register,
@@ -31,7 +33,6 @@ export default function CheckoutForm() {
     resolver: zodResolver(checkoutSchema),
   });
 
-  // 🧾 Handle Checkout Submission
   const onSubmit = async (data: CheckoutFormValues) => {
     if (items.length === 0) {
       toast({
@@ -47,7 +48,8 @@ export default function CheckoutForm() {
       description: "Please wait a moment.",
     });
 
-    await new Promise((r) => setTimeout(r, 1200)); // simulate API delay
+    // Simulate API call or Stripe/M-Pesa integration
+    await new Promise((r) => setTimeout(r, 1200));
 
     toast({
       title: "Order placed successfully 🎉",
@@ -63,71 +65,62 @@ export default function CheckoutForm() {
   return (
     <motion.form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-5"
+      className="space-y-6 max-w-lg mx-auto bg-primary/10 p-6 rounded-xl shadow-sm"
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
+      <h2 className="text-xl font-semibold mb-4 text-center">
+        Checkout Details
+      </h2>
+
       {/* 🧍 Personal Info */}
-      <div>
-        <label className="block mb-1 font-medium">Full Name</label>
-        <input
-          type="text"
-          {...register("fullName")}
-          className="w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none"
+      <div className="space-y-4">
+        <FormField
+          label="Full Name"
+          error={errors.fullName?.message}
+          inputProps={{
+            ...register("fullName"),
+            type: "text",
+            autoComplete: "name",
+          }}
         />
-        {errors.fullName && (
-          <p className="text-xs text-red-500 mt-1">{errors.fullName.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block mb-1 font-medium">Email</label>
-        <input
-          type="email"
-          {...register("email")}
-          className="w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none"
+        <FormField
+          label="Email"
+          error={errors.email?.message}
+          inputProps={{
+            ...register("email"),
+            type: "email",
+            autoComplete: "email",
+          }}
         />
-        {errors.email && (
-          <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block mb-1 font-medium">Phone</label>
-        <input
-          type="tel"
-          {...register("phone")}
-          className="w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none"
+        <FormField
+          label="Phone"
+          error={errors.phone?.message}
+          inputProps={{
+            ...register("phone"),
+            type: "tel",
+            autoComplete: "tel",
+          }}
         />
-        {errors.phone && (
-          <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
-        )}
-      </div>
-
-      {/* 🏠 Address */}
-      <div>
-        <label className="block mb-1 font-medium">Address</label>
-        <input
-          type="text"
-          {...register("address")}
-          className="w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none"
+        <FormField
+          label="Address"
+          error={errors.address?.message}
+          inputProps={{
+            ...register("address"),
+            type: "text",
+            autoComplete: "address-line1",
+          }}
         />
-        {errors.address && (
-          <p className="text-xs text-red-500 mt-1">{errors.address.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block mb-1 font-medium">City</label>
-        <input
-          type="text"
-          {...register("city")}
-          className="w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none"
+        <FormField
+          label="City"
+          error={errors.city?.message}
+          inputProps={{
+            ...register("city"),
+            type: "text",
+            autoComplete: "address-level2",
+          }}
         />
-        {errors.city && (
-          <p className="text-xs text-red-500 mt-1">{errors.city.message}</p>
-        )}
       </div>
 
       {/* 🛍 Summary */}
@@ -161,10 +154,35 @@ export default function CheckoutForm() {
         type="submit"
         whileTap={{ scale: 0.97 }}
         disabled={isSubmitting}
-        className="w-full bg-secondary hover:bg-accent text-background py-2 rounded-lg font-semibold transition"
+        className="w-full bg-secondary hover:bg-accent text-background py-2 rounded-lg font-semibold transition disabled:opacity-70"
       >
         {isSubmitting ? "Placing order..." : "Confirm Order"}
       </motion.button>
     </motion.form>
+  );
+}
+
+// 🔧 Small helper for DRY input components
+function FormField({
+  label,
+  error,
+  inputProps,
+}: {
+  label: string;
+  error?: string;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
+}) {
+  return (
+    <div>
+      <label className="block mb-1 font-medium">{label}</label>
+      <input
+        {...inputProps}
+        aria-invalid={!!error}
+        className={`w-full px-3 py-2 rounded-lg border bg-background focus:ring-2 focus:ring-accent outline-none transition ${
+          error ? "border-red-500" : "border-foreground/20"
+        }`}
+      />
+      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    </div>
   );
 }

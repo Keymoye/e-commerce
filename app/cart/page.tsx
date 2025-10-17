@@ -3,6 +3,8 @@
 import { CartStore } from "@/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast"; // ✅ correct import
 
 export default function CartPage() {
   const items = CartStore((s) => s.items);
@@ -10,6 +12,26 @@ export default function CartPage() {
   const removeItem = CartStore((s) => s.removeItem);
   const updateQuantity = CartStore((s) => s.updateQuantity);
   const clear = CartStore((s) => s.clear);
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleCheckout = () => {
+    if (items.length === 0) {
+      toast({
+        title: "Cart is empty 🛒",
+        description: "Add items before proceeding to checkout.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Redirecting to Checkout...",
+      description: "Please wait while we prepare your order.",
+    });
+
+    setTimeout(() => router.push("/checkout"), 800);
+  };
 
   if (items.length === 0)
     return (
@@ -24,6 +46,7 @@ export default function CartPage() {
 
   return (
     <section className="p-6 max-w-3xl mx-auto">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <motion.h2
           layoutId="cart-title"
@@ -34,7 +57,14 @@ export default function CartPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={clear}
+          onClick={() => {
+            clear();
+            toast({
+              title: "Cart cleared 🧹",
+              description: "All items have been removed.",
+              variant: "destructive",
+            });
+          }}
           aria-label="Clear all items"
           className="text-sm text-background rounded-lg bg-secondary hover:bg-accent transition-colors py-2 px-4 shadow-sm"
         >
@@ -42,6 +72,7 @@ export default function CartPage() {
         </motion.button>
       </div>
 
+      {/* Cart Items */}
       <AnimatePresence>
         <ul className="space-y-4">
           {items.map((item) => (
@@ -63,9 +94,14 @@ export default function CartPage() {
                   <motion.button
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() =>
-                      updateQuantity(item.id, Math.max(1, item.quantity - 1))
-                    }
+                    onClick={() => {
+                      const newQuantity = Math.max(1, item.quantity - 1);
+                      updateQuantity(item.id, newQuantity);
+                      toast({
+                        title: "Quantity updated",
+                        description: `${item.name} → ${newQuantity} pcs.`,
+                      });
+                    }}
                     className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
                     aria-label="Decrease quantity"
                   >
@@ -79,7 +115,14 @@ export default function CartPage() {
                   <motion.button
                     whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={() => {
+                      const newQuantity = item.quantity + 1;
+                      updateQuantity(item.id, newQuantity);
+                      toast({
+                        title: "Quantity updated",
+                        description: `${item.name} → ${newQuantity} pcs.`,
+                      });
+                    }}
                     className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
                     aria-label="Increase quantity"
                   >
@@ -96,7 +139,13 @@ export default function CartPage() {
                 <motion.button
                   whileHover={{ scale: 1.1, color: "#ef4444" }}
                   whileTap={{ scale: 0.9 }}
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => {
+                    removeItem(item.id);
+                    toast({
+                      title: "Item removed 🗑️",
+                      description: `${item.name} was removed from your cart.`,
+                    });
+                  }}
                   className="text-xs mt-2 transition-colors"
                   aria-label="Remove item"
                 >
@@ -108,9 +157,10 @@ export default function CartPage() {
         </ul>
       </AnimatePresence>
 
+      {/* Total & Checkout */}
       <motion.div
         layout
-        className="mt-8 border-t pt-4 flex justify-between items-center font-bold text-lg"
+        className="mt-8 border-t pt-4 flex flex-col sm:flex-row justify-between items-center font-bold text-lg gap-4"
       >
         <span>Total:</span>
         <motion.span
@@ -121,6 +171,15 @@ export default function CartPage() {
         >
           ${total.toFixed(2)}
         </motion.span>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCheckout}
+          className="bg-secondary hover:bg-accent text-background font-semibold py-2 px-6 rounded-lg transition"
+        >
+          Proceed to Checkout →
+        </motion.button>
       </motion.div>
     </section>
   );

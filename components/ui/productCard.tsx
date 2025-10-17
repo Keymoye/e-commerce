@@ -7,9 +7,24 @@ import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
 import CartButton from "@/components/ui/CartButton";
+import { useToast } from "@/components/ui/toast";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { toggleWishlist, isWishlisted } = WishlistStore();
+  const { toast } = useToast();
+
+  const handleWishlist = () => {
+    const currentlyWishlisted = isWishlisted(product.id);
+    toggleWishlist(product);
+
+    toast({
+      title: currentlyWishlisted ? "Removed 💔" : "Saved ❤️",
+      description: currentlyWishlisted
+        ? `${product.name} removed from wishlist.`
+        : `${product.name} added to wishlist.`,
+    });
+  };
+
   const inWishlist = isWishlisted(product.id);
 
   return (
@@ -43,7 +58,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <motion.button
           whileTap={{ scale: 0.9 }}
           whileHover={{ rotate: 10 }}
-          onClick={() => toggleWishlist(product)}
+          onClick={handleWishlist}
           aria-pressed={inWishlist}
           aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
           className={`absolute top-2 right-2 p-2 rounded-full bg-accent transition-colors ${
