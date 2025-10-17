@@ -1,18 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { FaSpinner } from "react-icons/fa";
+import ProductSkeleton from "@/components/ui/productSkeleton";
 
 export default function Loading() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground">
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-      >
-        <FaSpinner className="text-4xl text-accent" />
-      </motion.div>
-      <p className="mt-4 text-sm text-foreground/70">Loading, please wait...</p>
-    </div>
+    <section className="grid gap-4 p-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <ProductSkeleton key={i} />
+      ))}
+    </section>
   );
 }
