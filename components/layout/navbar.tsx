@@ -13,6 +13,7 @@ export default function NavBar() {
     { href: "/categories", label: "Categories" },
     { href: "/wishlist", label: "Wishlist" },
     { href: "/profile", label: "Profile" },
+    { href: "/checkout", label: "Checkout" },
   ];
 
   return (
