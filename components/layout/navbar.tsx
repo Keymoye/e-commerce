@@ -5,14 +5,26 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import CartLink from "@/components/ui/cartLink";
+import { useUserSession } from "@/hooks/useUserSession";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/toast";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading } = useUserSession();
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({ title: "Logged out successfully 👋" });
+    router.push("/");
+  };
 
   const navLinks = [
     { href: "/categories", label: "Categories" },
     { href: "/wishlist", label: "Wishlist" },
-    { href: "/profile", label: "Profile" },
   ];
 
   return (
@@ -47,10 +59,47 @@ export default function NavBar() {
             </li>
           ))}
 
-          {/* 🛒 Dynamic Cart Link */}
+          {/* 🛒 Cart */}
           <li>
             <CartLink />
           </li>
+
+          {/* 👤 Auth CTA */}
+          {!loading && (
+            <li>
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <Link
+                    href="/profile"
+                    className="text-sm font-medium text-foreground hover:text-accent transition-colors"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/login"
+                    className="px-3 py-1.5 rounded-md text-sm font-medium bg-secondary text-background hover:bg-accent transition-all"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="px-3 py-1.5 rounded-md text-sm font-medium border border-secondary text-secondary hover:bg-secondary hover:text-background transition-all"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </li>
+          )}
         </ul>
 
         {/* Mobile Menu Button */}
@@ -87,10 +136,43 @@ export default function NavBar() {
                 </li>
               ))}
 
-              {/* 🛒 Mobile Cart Link */}
               <li>
                 <CartLink onClick={() => setIsOpen(false)} />
               </li>
+
+              {/* Auth CTA - mobile */}
+              {!loading && (
+                <li>
+                  {user ? (
+                    <button
+                      onClick={() => {
+                        setIsOpen(false);
+                        handleLogout();
+                      }}
+                      className="text-red-500 hover:text-red-600 font-medium"
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        href="/login"
+                        onClick={() => setIsOpen(false)}
+                        className="px-4 py-2 rounded-md bg-secondary text-background hover:bg-accent text-center transition"
+                      >
+                        Login
+                      </Link>
+                      <Link
+                        href="/register"
+                        onClick={() => setIsOpen(false)}
+                        className="px-4 py-2 rounded-md border border-secondary text-secondary hover:bg-secondary hover:text-background text-center transition"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
+                </li>
+              )}
             </ul>
           </motion.div>
         )}
