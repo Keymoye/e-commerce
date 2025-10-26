@@ -4,7 +4,7 @@ import { CartStore } from "@/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/toast"; // ✅ correct import
+import { useToast } from "@/components/ui/toast";
 
 export default function CartPage() {
   const items = CartStore((s) => s.items);
