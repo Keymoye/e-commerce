@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/components/ui/toast";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 const schema = z.object({
   email: z.string().email(),
@@ -45,6 +47,23 @@ export default function LoginPage() {
         description: "Redirecting to your dashboard...",
       });
       router.push("/");
+    }
+  };
+
+  const handleOAuthLogin = async (provider: "google" | "github") => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`, // important
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Login failed 🚫",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -89,6 +108,21 @@ export default function LoginPage() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+      <div className="mt-6 space-y-2">
+        <button
+          onClick={() => handleOAuthLogin("google")}
+          className="w-full flex items-center justify-center gap-2 bg-white text-black border py-2 rounded-lg hover:bg-gray-100 transition"
+        >
+          <FcGoogle className="text-xl" /> Continue with Google
+        </button>
+
+        <button
+          onClick={() => handleOAuthLogin("github")}
+          className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition"
+        >
+          <FaGithub className="text-xl" /> Continue with GitHub
+        </button>
+      </div>
     </section>
   );
 }
