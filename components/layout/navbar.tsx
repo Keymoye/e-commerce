@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
+import { FaUserCircle } from "react-icons/fa";
 import CartLink from "@/components/ui/cartLink";
 import { useUserSession } from "@/hooks/useUserSession";
 import { supabase } from "@/lib/supabaseClient";
@@ -73,7 +74,7 @@ export default function NavBar() {
                     href="/profile"
                     className="text-sm font-medium text-foreground hover:text-accent transition-colors"
                   >
-                    Profile
+                    <FaUserCircle className="text-2xl" />
                   </Link>
                   <button
                     onClick={handleLogout}
