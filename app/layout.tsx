@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Inter } from "next/font/google";
 import NavBar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
@@ -10,6 +11,8 @@ export const metadata: Metadata = {
   description: "An e-commerce store built with Next.js",
 };
 
+const inter = Inter({ subsets: ["latin"] });
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -17,7 +20,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="bg-background text-foreground min-h-screen flex flex-col font-sans antialiased">
+      <body
+        className={
+          "${inter.className}bg-background text-foreground min-h-screen flex flex-col antialiased"
+        }
+      >
         {/* ✅ Wrap the entire app inside ToastProvider */}
         <ToastProvider>
           <AuthProvider>
