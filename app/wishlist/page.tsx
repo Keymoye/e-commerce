@@ -15,21 +15,21 @@ export default function WishlistPage() {
   const addToCart = CartStore((s) => s.addItem);
   const { toast } = useToast();
 
-  if (items.length === 0)
-    return (
-      <div className="p-6 text-center">
-        <FaHeartBroken className="text-4xl text-accent mx-auto mb-3" />
-        <p className="text-lg font-semibold text-foreground/70">
-          Your wishlist is empty 💔
-        </p>
-        <Link
-          href="/"
-          className="mt-4 inline-block bg-secondary text-background px-4 py-2 rounded-lg hover:bg-accent transition-colors"
-        >
-          Browse Products
-        </Link>
-      </div>
-    );
+  if (items.length === 0) console.log("Wishlist is empty");
+  return (
+    <div className="p-6 text-center">
+      <FaHeartBroken className="text-4xl text-accent mx-auto mb-3" />
+      <p className="text-lg font-semibold text-foreground/70">
+        Your wishlist is empty 💔
+      </p>
+      <Link
+        href="/"
+        className="mt-4 inline-block bg-secondary text-background px-4 py-2 rounded-lg hover:bg-accent transition-colors"
+      >
+        Browse Products
+      </Link>
+    </div>
+  );
 
   const handleAddToCart = (item: any) => {
     addToCart(item, 1);

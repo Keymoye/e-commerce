@@ -28,20 +28,23 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginData) => {
     setLoading(true);
+    console.log("loading...", loading);
     const { error } = await supabase.auth.signInWithPassword({
       email: data.email,
       password: data.password,
     });
-
+    console.log("Login attempt:", { email: data.email, error });
     setLoading(false);
 
     if (error) {
+      console.log("Login error:", error);
       toast({
         title: "Login failed 🚫",
         description: error.message,
         variant: "destructive",
       });
     } else {
+      console.log("Login successful");
       toast({
         title: "Welcome back 👋",
         description: "Redirecting to your dashboard...",
@@ -51,19 +54,43 @@ export default function LoginPage() {
   };
 
   const handleOAuthLogin = async (provider: "google" | "github") => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`, // important
-      },
-    });
+    try {
+      setLoading(true);
+      console.log("loading...", loading);
 
-    if (error) {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        console.error("OAuth login error:", error);
+        toast({
+          title: "Login failed 🚫",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("OAuth login successful:", data);
       toast({
-        title: "Login failed 🚫",
-        description: error.message,
+        title: "Welcome back 👋",
+        description: "Redirecting to your dashboard...",
+      });
+
+      router.push("/");
+    } catch (err: any) {
+      console.error("Unexpected error during OAuth login:", err);
+      toast({
+        title: "Unexpected error ⚠️",
+        description: err.message ?? "Something went wrong.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,6 +150,15 @@ export default function LoginPage() {
           <FaGithub className="text-xl" /> Continue with GitHub
         </button>
       </div>
+      <p className="text-center text-sm mt-4 text-foreground/80">
+        Don't have an account?{" "}
+        <a
+          href="/register"
+          className="text-accent font-semibold hover:underline"
+        >
+          Register
+        </a>
+      </p>
     </section>
   );
 }

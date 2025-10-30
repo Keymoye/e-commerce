@@ -33,33 +33,47 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data: RegisterForm) => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email: data.email,
-      password: data.password,
-      options: {
-        data: {
-          full_name: data.fullName,
+      console.log("Signup attempt:", { email: data.email });
+
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.fullName,
+          },
         },
-      },
-    });
-
-    setLoading(false);
-
-    if (error) {
-      toast({
-        title: "Signup failed 🚫",
-        description: error.message,
-        variant: "destructive",
       });
-    } else {
+
+      if (error) {
+        console.error("Signup error:", error);
+        toast({
+          title: "Signup failed 🚫",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Signup successful");
       toast({
         title: "Account created successfully 🎉",
         description: "You’ve been registered! Redirecting...",
       });
 
       setTimeout(() => router.push("/"), 1000);
+    } catch (err: any) {
+      console.error("Unexpected error during signup:", err);
+      toast({
+        title: "Unexpected error ⚠️",
+        description: err.message ?? "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -23,7 +23,6 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col antialiased`}
       >
-        {/* ✅ Wrap the entire app inside ToastProvider */}
         <ToastProvider>
           <AuthProvider>
             <NavBar />
