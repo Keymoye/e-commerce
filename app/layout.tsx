@@ -21,9 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={
-          "${inter.className}bg-background text-foreground min-h-screen flex flex-col antialiased"
-        }
+        className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col antialiased`}
       >
         {/* ✅ Wrap the entire app inside ToastProvider */}
         <ToastProvider>
