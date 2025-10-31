@@ -1,33 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
-import { User } from "@supabase/supabase-js";
+import { useUserSession } from "@/hooks/useUserSession";
 import { FaUserCircle } from "react-icons/fa";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUserSession();
   const router = useRouter();
 
   useEffect(() => {
-    const getUser = async () => {
-      console.log("🔐 Checking authenticated user...");
-      const { data, error } = await supabase.auth.getUser();
-
-      if (error || !data.user) {
-        console.log("⚠️ No user found, redirecting to login.");
-        router.push("/auth/login");
-      } else {
-        console.log("✅ User found:", data.user);
-        setUser(data.user);
-      }
-      setLoading(false);
-    };
-
-    getUser();
-  }, [router]);
+    if (!loading && !user) {
+      console.log("⚠️ No user session, redirecting to login.");
+      router.push("/login");
+    }
+  }, [loading, user, router]);
 
   if (loading) {
     return (
@@ -51,7 +39,7 @@ export default function ProfilePage() {
         onClick={async () => {
           console.log("🚪 Logging out user...");
           await supabase.auth.signOut();
-          router.push("/auth/login");
+          router.push("/login");
         }}
         className="bg-primary text-background px-4 py-2 rounded-lg hover:opacity-90 transition"
       >
