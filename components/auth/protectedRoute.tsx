@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useEffect } from "react";
 
@@ -11,14 +11,28 @@ export default function ProtectedRoute({
 }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
+    // Save last visited path (for redirect after login)
+    if (user && pathname) {
+      localStorage.setItem("lastVisitedPath", pathname);
+    }
+
+    // Redirect if not logged in
     if (!loading && !user) {
+      localStorage.setItem("redirectAfterLogin", pathname);
       router.push("/login");
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, pathname]);
 
-  if (loading) return <p className="text-center p-6">Checking session...</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-[80vh]">
+        <p className="text-foreground/70 animate-pulse">Checking session...</p>
+      </div>
+    );
+  }
 
-  return <>{user ? children : null}</>;
+  return user ? <>{children}</> : null;
 }

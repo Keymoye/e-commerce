@@ -49,24 +49,31 @@ export default function LoginPage() {
         title: "Welcome back 👋",
         description: "Redirecting to your dashboard...",
       });
-      router.push("/");
+      const redirectTo = localStorage.getItem("redirectAfterLogin") || "/";
+      router.push(redirectTo);
+      localStorage.removeItem("redirectAfterLogin");
     }
   };
 
   const handleOAuthLogin = async (provider: "google" | "github") => {
     try {
       setLoading(true);
-      console.log("loading...", loading);
+      console.log(`🌐 Starting ${provider} OAuth login...`);
 
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      // Remember the last page before redirect
+      const currentPath = window.location.pathname;
+      localStorage.setItem("redirectAfterLogin", currentPath);
+
+      // Kick off Supabase OAuth flow
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback`, // Supabase callback
         },
       });
 
       if (error) {
-        console.error("OAuth login error:", error);
+        console.error("❌ OAuth login error:", error);
         toast({
           title: "Login failed 🚫",
           description: error.message,
@@ -75,15 +82,15 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("OAuth login successful:", data);
+      console.log(
+        "✅ OAuth flow started successfully — waiting for redirect..."
+      );
       toast({
-        title: "Welcome back 👋",
-        description: "Redirecting to your dashboard...",
+        title: `Redirecting to ${provider}...`,
+        description: "Please complete the sign-in popup.",
       });
-
-      router.push("/");
     } catch (err: any) {
-      console.error("Unexpected error during OAuth login:", err);
+      console.error("⚠️ Unexpected error during OAuth login:", err);
       toast({
         title: "Unexpected error ⚠️",
         description: err.message ?? "Something went wrong.",
