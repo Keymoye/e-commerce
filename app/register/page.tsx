@@ -103,6 +103,7 @@ export default function RegisterPage() {
           <label className="block text-sm mb-1">Email</label>
           <input
             type="email"
+            autoComplete="email"
             {...form.register("email")}
             className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
           />
@@ -117,6 +118,7 @@ export default function RegisterPage() {
           <label className="block text-sm mb-1">Password</label>
           <input
             type="password"
+            autoComplete="current-password"
             {...form.register("password")}
             className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
           />
@@ -131,6 +133,7 @@ export default function RegisterPage() {
           <label className="block text-sm mb-1">Confirm Password</label>
           <input
             type="password"
+            autoComplete="new-password"
             {...form.register("confirmPassword")}
             className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
           />

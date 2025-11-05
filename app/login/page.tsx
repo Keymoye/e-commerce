@@ -83,6 +83,7 @@ export default function LoginPage() {
           <label className="block text-sm mb-1">Email</label>
           <input
             type="email"
+            autoComplete="email"
             {...form.register("email")}
             className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
           />
@@ -97,6 +98,7 @@ export default function LoginPage() {
           <label className="block text-sm mb-1">Password</label>
           <input
             type="password"
+            autoComplete="current-password"
             {...form.register("password")}
             className="w-full px-3 py-2 border rounded-lg bg-background text-foreground"
           />

@@ -16,60 +16,64 @@ const AuthContext = createContext<AuthContextType>({
   refreshUser: async () => {},
 });
 
-export const AuthProvider = ({
+export function AuthProvider({
   children,
   initialUser = null,
 }: {
   children: React.ReactNode;
   initialUser?: User | null;
-}) => {
+}) {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(!initialUser);
+  const [loading, setLoading] = useState(true);
 
-  // 🧠 Hydrate client session
   useEffect(() => {
-    const syncUser = async () => {
+    let mounted = true;
+
+    async function hydrateUser() {
       try {
         const { data } = await supabase.auth.getSession();
+        if (!mounted) return;
         setUser(data.session?.user ?? null);
-      } catch (err) {
-        console.error("Error getting session:", err);
+      } catch (error) {
+        console.error("Error loading session:", error);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
-    };
-
-    // Run only if no initial user from SSR
-    if (!initialUser) {
-      useEffect(() => {
-        // Wait for cookies to sync before hydrating
-        const timer = setTimeout(syncUser, 200);
-        return () => clearTimeout(timer);
-      }, []);
     }
 
-    // 🔄 Listen for login/logout changes
+    hydrateUser();
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        setUser(session?.user ?? null);
+        if (mounted) setUser(session?.user ?? null);
       }
     );
 
     return () => {
+      mounted = false;
       listener.subscription.unsubscribe();
     };
-  }, [initialUser]);
+  }, []);
 
   const refreshUser = async () => {
     const { data } = await supabase.auth.getSession();
     setUser(data.session?.user ?? null);
   };
 
+  // Always render children once loading is complete (avoids mismatch)
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export const useAuth = () => useContext(AuthContext);
