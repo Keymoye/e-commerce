@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   const supabase = await createServerSupabaseClient();
 
-  // Exchange the code for a session and set cookies automatically
+  // This line performs the token exchange and sets cookies in the response
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
@@ -19,6 +19,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  // Everything succeeded — cookies are now set
-  return NextResponse.redirect("/");
+  // 🧠 IMPORTANT: Return Supabase’s cookies with your redirect response
+  const response = NextResponse.redirect(new URL("/", request.url));
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  // Ensure Supabase’s cookies propagate correctly
+  const cookies = await request.headers.get("cookie");
+  if (cookies) {
+    response.headers.set("Set-Cookie", cookies);
+  }
+
+  return response;
 }

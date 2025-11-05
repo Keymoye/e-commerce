@@ -40,7 +40,13 @@ export const AuthProvider = ({
     };
 
     // Run only if no initial user from SSR
-    if (!initialUser) syncUser();
+    if (!initialUser) {
+      useEffect(() => {
+        // Wait for cookies to sync before hydrating
+        const timer = setTimeout(syncUser, 200);
+        return () => clearTimeout(timer);
+      }, []);
+    }
 
     // 🔄 Listen for login/logout changes
     const { data: listener } = supabase.auth.onAuthStateChange(
