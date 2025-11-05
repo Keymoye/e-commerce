@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 import { motion } from "framer-motion";
 
@@ -37,33 +37,31 @@ export default function RegisterPage() {
       setLoading(true);
 
       console.log("Signup attempt:", { email: data.email });
-
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            full_name: data.fullName,
-          },
-        },
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          fullName: data.fullName,
+        }),
       });
 
-      if (error) {
-        console.error("Signup error:", error);
+      const result = await res.json();
+
+      if (!res.ok) {
         toast({
           title: "Signup failed 🚫",
-          description: error.message,
+          description: result.error || "Something went wrong",
           variant: "destructive",
         });
         return;
       }
 
-      console.log("Signup successful");
       toast({
         title: "Account created successfully 🎉",
-        description: "You’ve been registered! Redirecting...",
+        description: "Redirecting...",
       });
-
       setTimeout(() => router.push("/"), 1000);
     } catch (err: any) {
       console.error("Unexpected error during signup:", err);

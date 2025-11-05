@@ -7,7 +7,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import CartLink from "@/components/ui/cartLink";
 import { useUserSession } from "@/hooks/useUserSession";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 

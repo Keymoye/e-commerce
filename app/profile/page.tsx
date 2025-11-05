@@ -3,14 +3,12 @@
 import { FaUserCircle } from "react-icons/fa";
 import { useUserSession } from "@/hooks/useUserSession";
 import { useLogout } from "@/hooks/useLogout";
-import ProtectedRoute from "@/components/auth/protectedRoute";
 
 export default function ProfilePage() {
   const { user } = useUserSession();
   const { logout } = useLogout();
 
   return (
-    <ProtectedRoute>
       <section className="flex flex-col items-center justify-center min-h-[80vh] p-6 text-center">
         <FaUserCircle className="text-6xl text-secondary mb-4" />
         <h1 className="text-2xl font-semibold mb-2">
@@ -25,6 +23,5 @@ export default function ProfilePage() {
           Logout
         </button>
       </section>
-    </ProtectedRoute>
   );
 }

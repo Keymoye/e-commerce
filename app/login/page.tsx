@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/components/ui/toast";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
@@ -27,72 +26,46 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginData) => {
-    setLoading(true);
-    console.log("loading...", loading);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
-    console.log("Login attempt:", { email: data.email, error });
-    setLoading(false);
+    try {
+      setLoading(true);
 
-    if (error) {
-      console.log("Login error:", error);
-      toast({
-        title: "Login failed 🚫",
-        description: error.message,
-        variant: "destructive",
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-    } else {
-      console.log("Login successful");
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        throw new Error(result.error || "Login failed");
+      }
+
       toast({
         title: "Welcome back 👋",
         description: "Redirecting to your dashboard...",
       });
-      const redirectTo = localStorage.getItem("redirectAfterLogin") || "/";
-      router.push(redirectTo);
-      localStorage.removeItem("redirectAfterLogin");
+    } catch (err: any) {
+      toast({
+        title: "Login failed 🚫",
+        description: err.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleOAuthLogin = async (provider: "google" | "github") => {
     try {
       setLoading(true);
-      console.log(`🌐 Starting ${provider} OAuth login...`);
-
-      // Remember the last page before redirect
-      const currentPath = window.location.pathname;
-      localStorage.setItem("redirectAfterLogin", currentPath);
-
-      // Kick off Supabase OAuth flow
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`, // Supabase callback
-        },
-      });
-
-      if (error) {
-        console.error("❌ OAuth login error:", error);
-        toast({
-          title: "Login failed 🚫",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log(
-        "✅ OAuth flow started successfully — waiting for redirect..."
-      );
-      toast({
-        title: `Redirecting to ${provider}...`,
-        description: "Please complete the sign-in popup.",
-      });
+      // call server route to start OAuth
+      window.location.href = `/api/oauth/${provider}`;
     } catch (err: any) {
-      console.error("⚠️ Unexpected error during OAuth login:", err);
       toast({
-        title: "Unexpected error ⚠️",
+        title: "OAuth error ⚠️",
         description: err.message ?? "Something went wrong.",
         variant: "destructive",
       });
@@ -142,6 +115,7 @@ export default function LoginPage() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+
       <div className="mt-6 space-y-2">
         <button
           onClick={() => handleOAuthLogin("google")}
@@ -157,6 +131,7 @@ export default function LoginPage() {
           <FaGithub className="text-xl" /> Continue with GitHub
         </button>
       </div>
+
       <p className="text-center text-sm mt-4 text-foreground/80">
         Don't have an account?{" "}
         <a

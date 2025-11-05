@@ -1,29 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/components/auth/AuthProvider";
 
+/**
+ * A simple alias hook for semantic clarity.
+ * Returns current user, loading state, and refreshUser() method.
+ */
 export function useUserSession() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    };
-
-    loadSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  return { user, loading };
+  const { user, loading, refreshUser } = useAuth();
+  return { user, loading, refreshUser };
 }

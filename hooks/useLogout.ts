@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/components/ui/toast";
 
 export function useLogout() {
@@ -9,34 +8,31 @@ export function useLogout() {
   const { toast } = useToast();
 
   const logout = async () => {
-    console.log("🚪 Attempting to log out...");
+    console.log("🚪 Logging out...");
 
     try {
-      const { error } = await supabase.auth.signOut();
+      const res = await fetch("/api/logout", {
+        method: "POST",
+      });
 
-      if (error) {
-        console.error("❌ Logout failed:", error.message);
-        toast({
-          title: "Logout failed 🚫",
-          description: error.message,
-          variant: "destructive",
-        });
-        return; // stop execution if there's an error
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error || "Logout failed");
       }
 
-      console.log("✅ Logout successful");
       toast({
-        title: "Logged out successfully 👋",
+        title: "Logged out 👋",
         description: "Redirecting to login...",
       });
 
-      router.push("/auth/login");
-    } catch (err) {
-      // Catch unexpected runtime errors
-      console.error("⚠️ Unexpected error during logout:", err);
+      setTimeout(() => {
+        router.replace("/login");
+      }, 800);
+    } catch (err: any) {
+      console.error("⚠️ Unexpected logout error:", err);
       toast({
-        title: "Unexpected Error ⚠️",
-        description: "Something went wrong. Please try again.",
+        title: "Unexpected error ⚠️",
+        description: err.message ?? "Something went wrong. Please try again.",
         variant: "destructive",
       });
     }

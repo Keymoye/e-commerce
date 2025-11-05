@@ -1,41 +1,66 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import type { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase/client";
 
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   loading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  refreshUser: async () => {},
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any | null>(null);
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({
+  children,
+  initialUser = null,
+}: {
+  children: React.ReactNode;
+  initialUser?: User | null;
+}) => {
+  const [user, setUser] = useState<User | null>(initialUser);
+  const [loading, setLoading] = useState(!initialUser);
 
+  // 🧠 Hydrate client session
   useEffect(() => {
-    const init = async () => {
-      const { data } = await supabase.auth.getSession();
-      setUser(data.session?.user ?? null);
-      setLoading(false);
+    const syncUser = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setUser(data.session?.user ?? null);
+      } catch (err) {
+        console.error("Error getting session:", err);
+      } finally {
+        setLoading(false);
+      }
     };
-    init();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
+    // Run only if no initial user from SSR
+    if (!initialUser) syncUser();
 
-    return () => subscription.unsubscribe();
-  }, []);
+    // 🔄 Listen for login/logout changes
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [initialUser]);
+
+  const refreshUser = async () => {
+    const { data } = await supabase.auth.getSession();
+    setUser(data.session?.user ?? null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider value={{ user, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
