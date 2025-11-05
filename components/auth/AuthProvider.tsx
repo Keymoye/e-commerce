@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
+import Loading from "@/app/loading";
 
 interface AuthContextType {
   user: User | null;
@@ -62,11 +63,7 @@ export function AuthProvider({
 
   // Always render children once loading is complete (avoids mismatch)
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

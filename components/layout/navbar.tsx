@@ -6,22 +6,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import CartLink from "@/components/ui/cartLink";
-import { useUserSession } from "@/hooks/useUserSession";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, loading } = useUserSession();
+  const { user, loading } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({ title: "Logged out successfully 👋" });
-    router.push("/");
-  };
 
   const navLinks = [
     { href: "/categories", label: "Categories" },
@@ -76,12 +70,6 @@ export default function NavBar() {
                   >
                     <FaUserCircle className="text-2xl" />
                   </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
-                  >
-                    Logout
-                  </button>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
@@ -145,15 +133,12 @@ export default function NavBar() {
               {!loading && (
                 <li>
                   {user ? (
-                    <button
-                      onClick={() => {
-                        setIsOpen(false);
-                        handleLogout();
-                      }}
-                      className="text-red-500 hover:text-red-600 font-medium"
+                    <Link
+                      href="/profile"
+                      className="text-sm font-medium text-foreground hover:text-accent transition-colors"
                     >
-                      Logout
-                    </button>
+                      <FaUserCircle className="text-2xl" />
+                    </Link>
                   ) : (
                     <div className="flex flex-col gap-2">
                       <Link
