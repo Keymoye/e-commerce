@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const redirectBase =
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const redirectBase = process.env.NEXT_PUBLIC_SITE_URL!;
 
 export async function GET(
-  request: Request,
+  _req: Request,
   { params }: { params: { provider: string } }
 ) {
   const supabase = await createServerSupabaseClient();
-
   const provider = params.provider as "google" | "github";
 
   const { data, error } = await supabase.auth.signInWithOAuth({
