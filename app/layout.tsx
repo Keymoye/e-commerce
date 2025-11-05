@@ -5,6 +5,7 @@ import NavBar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { getUser } from "@/lib/supabase/getUser";
 
 export const metadata: Metadata = {
   title: "keystore",
@@ -12,19 +13,20 @@ export const metadata: Metadata = {
 };
 
 const inter = Inter({ subsets: ["latin"] });
+const data = await getUser();
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  const data = await getUser(); // ✅ now runs per request
+
   return (
     <html lang="en" className="scroll-smooth">
-      <body
-        className={`${inter.className} bg-background text-foreground min-h-screen flex flex-col antialiased`}
-      >
+      <body className="bg-background text-foreground min-h-screen flex flex-col antialiased">
         <ToastProvider>
-          <AuthProvider>
+          <AuthProvider initialUser={data}>
             <NavBar />
             <main className="flex-grow container mx-auto px-4 py-6">
               {children}

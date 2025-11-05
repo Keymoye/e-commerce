@@ -28,30 +28,36 @@ export function AuthProvider({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
 
-    async function hydrateUser() {
+    const syncSession = async () => {
       try {
+        // Start Supabase cookie <-> memory sync
+        await supabase.auth.startAutoRefresh();
+
         const { data } = await supabase.auth.getSession();
-        if (!mounted) return;
+        if (!isMounted) return;
+
+        // Hydrate user state from session
         setUser(data.session?.user ?? null);
-      } catch (error) {
-        console.error("Error loading session:", error);
+      } catch (err) {
+        console.error("Error syncing session:", err);
       } finally {
-        if (mounted) setLoading(false);
+        if (isMounted) setLoading(false);
       }
-    }
+    };
 
-    hydrateUser();
+    syncSession();
 
+    // Listen for auth changes (login/logout)
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (mounted) setUser(session?.user ?? null);
+        if (isMounted) setUser(session?.user ?? null);
       }
     );
 
     return () => {
-      mounted = false;
+      isMounted = false;
       listener.subscription.unsubscribe();
     };
   }, []);
@@ -61,7 +67,6 @@ export function AuthProvider({
     setUser(data.session?.user ?? null);
   };
 
-  // Always render children once loading is complete (avoids mismatch)
   if (loading) {
     return <Loading />;
   }
