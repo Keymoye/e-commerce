@@ -7,15 +7,10 @@ import { FiMenu, FiX } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 import CartLink from "@/components/ui/cartLink";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { supabase } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/toast";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading } = useAuth();
-  const { toast } = useToast();
-  const router = useRouter();
 
   const navLinks = [
     { href: "/categories", label: "Categories" },
