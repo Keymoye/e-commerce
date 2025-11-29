@@ -13,20 +13,18 @@ export const metadata: Metadata = {
 };
 
 const inter = Inter({ subsets: ["latin"] });
-const data = await getUser();
-
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const data = await getUser();
+  const user = await getUser();
 
   return (
     <html lang="en" className="scroll-smooth">
       <body className="bg-background text-foreground min-h-screen flex flex-col antialiased">
         <ToastProvider>
-          <AuthProvider initialUser={data}>
+          <AuthProvider initialUser={user}>
             <NavBar />
             <main className="flex-grow container mx-auto px-4 py-6">
               {children}
