@@ -11,8 +11,8 @@ import { useOAuthLogin } from "@/hooks/auth/useAuthLogin";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
-  const { login } = useLogin();
-  const { handleOAuthLogin } = useOAuthLogin();
+  const { login, loading } = useLogin();
+  const { handleOAuthLogin, loading } = useOAuthLogin();
 
   const schema = z.object({
     email: z.string().email(),

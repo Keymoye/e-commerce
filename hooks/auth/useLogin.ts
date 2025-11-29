@@ -1,18 +1,18 @@
 "use client";
 import { useToast } from "@/components/ui/toast";
+import { useState } from "react";
 
 export function useLogin() {
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  const login = async (data: LoginData) => {
+  const login = async (data: any) => {
     try {
       setLoading(true);
 
       const res = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
@@ -35,6 +35,7 @@ export function useLogin() {
     } finally {
       setLoading(false);
     }
-    return { login };
   };
+
+  return { login, loading };
 }

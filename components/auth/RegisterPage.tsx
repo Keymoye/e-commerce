@@ -8,8 +8,7 @@ import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/auth/useRegister";
 
 export default function RegisterPage() {
-  const { onSubmit } = useRegister();
-  const [loading, setLoading] = useState(false);
+const { onSubmit, loading } = useRegister();
 
   const registerSchema = z
     .object({
