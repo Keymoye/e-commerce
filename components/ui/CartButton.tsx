@@ -2,55 +2,10 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaMinus, FaShoppingCart } from "react-icons/fa";
-import { CartStore } from "@/store/cartStore";
-import { Product } from "@/types/product";
-import { useToast } from "@/components/ui/toast"; // ✅ Import useToast hook
+import { useCart } from "@/hooks/cart/useCart";
 
-export default function CartButton({ product }: { product: Product }) {
-  const addItem = CartStore((s) => s.addItem);
-  const updateQuantity = CartStore((s) => s.updateQuantity);
-  const removeItem = CartStore((s) => s.removeItem);
-  const quantity = CartStore(
-    (s) => s.items.find((i) => i.id === product.id)?.quantity ?? 0
-  );
-
-  const { toast } = useToast(); // ✅ Initialize toast hook
-
-  const handleAdd = () => {
-    if (quantity) {
-      updateQuantity(product.id, quantity + 1);
-      toast({
-        title: "Quantity Updated",
-        description: `Increased ${product.name} to ${quantity + 1}`,
-        duration: 2000,
-      });
-    } else {
-      addItem(product, 1);
-      toast({
-        title: "Item Added",
-        description: `${product.name} added to your cart.`,
-        duration: 2000,
-      });
-    }
-  };
-
-  const handleSub = () => {
-    if (quantity <= 1) {
-      removeItem(product.id);
-      toast({
-        title: "Item Removed",
-        description: `${product.name} removed from your cart.`,
-        duration: 2000,
-      });
-    } else {
-      updateQuantity(product.id, quantity - 1);
-      toast({
-        title: "Quantity Updated",
-        description: `Reduced ${product.name} to ${quantity - 1}`,
-        duration: 2000,
-      });
-    }
-  };
+export default function CartButton() {
+  const { handleAdd, handleSub, quantity, product } = useCart();
 
   return (
     <div className="flex justify-center">

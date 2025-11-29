@@ -2,7 +2,7 @@
 
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useLogout } from "@/hooks/useLogout";
+import { useLogout } from "@/hooks/auth/useLogout";
 
 export default function ProfilePage() {
   const { user } = useAuth();

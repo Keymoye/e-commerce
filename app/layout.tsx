@@ -20,7 +20,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const data = await getUser(); // ✅ now runs per request
+  const data = await getUser();
 
   return (
     <html lang="en" className="scroll-smooth">

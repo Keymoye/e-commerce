@@ -113,7 +113,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* CART BUTTON */}
       <div className="mt-3">
-        <CartButton product={product} />
+        <CartButton />
       </div>
     </motion.article>
   );

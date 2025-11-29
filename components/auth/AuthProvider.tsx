@@ -25,51 +25,49 @@ export function AuthProvider({
   initialUser?: User | null;
 }) {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialUser); 
 
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
 
     const syncSession = async () => {
       try {
-        // Start Supabase cookie <-> memory sync
-        await supabase.auth.startAutoRefresh();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-        const { data } = await supabase.auth.getSession();
-        if (!isMounted) return;
-
-        // Hydrate user state from session
-        setUser(data.session?.user ?? null);
+        if (!mounted) return;
+        setUser(session?.user ?? null);
       } catch (err) {
         console.error("Error syncing session:", err);
       } finally {
-        if (isMounted) setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     syncSession();
 
-    // Listen for auth changes (login/logout)
-    const { data: listener } = supabase.auth.onAuthStateChange(
+    const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (isMounted) setUser(session?.user ?? null);
+        if (!mounted) return;
+        setUser(session?.user ?? null);
       }
     );
 
     return () => {
-      isMounted = false;
-      listener.subscription.unsubscribe();
+      mounted = false;
+      subscription.subscription.unsubscribe();
     };
   }, []);
 
   const refreshUser = async () => {
-    const { data } = await supabase.auth.getSession();
-    setUser(data.session?.user ?? null);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    setUser(session?.user ?? null);
   };
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>

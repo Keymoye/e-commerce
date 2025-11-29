@@ -8,11 +8,11 @@ export default function HomePage() {
   const { data: products, loading } = useProducts();
 
   console.log("🌀 Fetching products...", loading);
-  console.log("📦 Products fetched:", products);
 
   if (loading) {
     return <Loading />;
   }
+  console.log("📦 Products fetched:", products);
 
   if (!products || products.length === 0) {
     console.log("⚠️ No products available.");
