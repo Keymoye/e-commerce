@@ -43,8 +43,8 @@ export async function GET(
     // Set PKCE cookie
     res.cookies.set("sb-code-verifier", codeVerifier, {
       httpOnly: true,
-      secure: true,
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", // true on Vercel
+      sameSite: "none",
       path: "/",
     });
 

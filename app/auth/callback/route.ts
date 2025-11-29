@@ -11,9 +11,8 @@ export async function GET(request: Request) {
     }
 
     const supabase = await createServerSupabaseClient();
-    const codeVerifier = request.headers
-      .get("cookie")
-      ?.match(/sb-code-verifier=([^;]+)/)?.[1];
+      // ✅ Read cookie properly
+    const codeVerifier = req.cookies.get("sb-code-verifier")?.value;
 
     if (!codeVerifier) {
       return NextResponse.json(
