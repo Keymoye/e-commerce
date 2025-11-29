@@ -29,6 +29,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <motion.article
+      data-testid="product-card"
       layout
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
@@ -113,7 +114,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* CART BUTTON */}
       <div className="mt-3">
-        <CartButton />
+        <CartButton product={product} />
       </div>
     </motion.article>
   );

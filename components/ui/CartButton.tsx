@@ -4,8 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaMinus, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/hooks/cart/useCart";
 
-export default function CartButton() {
-  const { handleAdd, handleSub, quantity, product } = useCart();
+export default function CartButton({
+  product,
+}: {
+  product: import("@/types/product").Product;
+}) {
+  const { handleAdd, handleSub, quantity } = useCart({ product });
 
   return (
     <div className="flex justify-center">
