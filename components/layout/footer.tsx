@@ -17,27 +17,27 @@ function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/" className="hover:text-accent transition">
+                <Link href="/" className="hover:text-accent transition">
                   Home
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/about" className="hover:text-accent transition">
+                <Link href="/about" className="hover:text-accent transition">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/products" className="hover:text-accent transition">
+                <Link href="/products" className="hover:text-accent transition">
                   Shop
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="hover:text-accent transition">
+                <Link href="/contact" className="hover:text-accent transition">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -47,24 +47,24 @@ function Footer() {
             <h3 className="text-lg font-semibold mb-3">Help Center</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/faq" className="hover:text-accent transition">
+                <Link href="/faq" className="hover:text-accent transition">
                   FAQs
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/returns" className="hover:text-accent transition">
+                <Link href="/returns" className="hover:text-accent transition">
                   Returns
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/shipping" className="hover:text-accent transition">
+                <Link href="/shipping" className="hover:text-accent transition">
                   Shipping
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy" className="hover:text-accent transition">
+                <Link href="/privacy" className="hover:text-accent transition">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

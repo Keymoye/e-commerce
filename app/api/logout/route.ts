@@ -1,21 +1,14 @@
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { logoutService } from "@/services/auth";
 
 export async function POST() {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-
+    await logoutService();
     return NextResponse.json({ message: "Logout successful" });
-  } catch (err: any) {
-    console.error("Logout handler error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Internal server error";
+    const status = (err as { status?: number })?.status ?? 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

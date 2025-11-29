@@ -1,39 +1,33 @@
 // /app/api/login/route.ts
 import { NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { loginService } from "@/services/auth";
+import { logger } from "@/lib/logger";
+import crypto from "crypto";
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { email, password } = await request.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required." },
-        { status: 400 }
-      );
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      // Supabase returns an error object we pass back to client
-      return NextResponse.json({ error: error.message }, { status: 401 });
-    }
-
-    // Cookies will be set by the Supabase SSR client via setAll
-    return NextResponse.json(
-      { message: "Login successful", user: data.user },
+    const body = await request.json();
+    const requestId =
+      request.headers.get("x-request-id") ??
+      crypto.randomUUID?.() ??
+      `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    logger.info({ requestId }, "login attempt", { body });
+    const result = await loginService(body);
+    const res = NextResponse.json(
+      { message: "Login successful", ...result },
       { status: 200 }
     );
-  } catch (err: any) {
-    console.error("Login handler error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    res.headers.set("x-request-id", requestId);
+    return res;
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Internal server error";
+    const status = (err as { status?: number })?.status ?? 500;
+    logger.error(
+      { requestId: request.headers.get("x-request-id") ?? "-" },
+      "login error",
+      err
     );
+    return NextResponse.json({ error: message }, { status });
   }
 }

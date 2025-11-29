@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaSadTear } from "react-icons/fa";
+import logger from "@/lib/logger";
 
 export default function NotFound() {
-  console.log("[NotFound] page not found...");
+  logger.warn("NotFound: page not found");
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center bg-background text-foreground p-6">
       <motion.div

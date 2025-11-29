@@ -2,23 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
+import logger from "@/lib/logger";
+import fetchJson from "@/lib/api";
 
 export function useLogout() {
   const router = useRouter();
   const { toast } = useToast();
 
   const logout = async () => {
-    console.log("🚪 Logging out...");
+    logger.info("Logging out...");
 
     try {
-      const res = await fetch("/api/logout", {
-        method: "POST",
-      });
-
-      if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error || "Logout failed");
-      }
+      await fetchJson("/api/logout", { method: "POST" });
 
       toast({
         title: "Logged out 👋",
@@ -28,11 +23,15 @@ export function useLogout() {
       setTimeout(() => {
         router.replace("/login");
       }, 800);
-    } catch (err: any) {
-      console.error("⚠️ Unexpected logout error:", err);
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.";
+      logger.error("Unexpected logout error:", errorMsg);
       toast({
         title: "Unexpected error ⚠️",
-        description: err.message ?? "Something went wrong. Please try again.",
+        description: errorMsg,
         variant: "destructive",
       });
     }

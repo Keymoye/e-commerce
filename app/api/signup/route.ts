@@ -1,4 +1,21 @@
 import { NextResponse } from "next/server";
+import { signupService } from "@/services/auth";
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const result = await signupService(body);
+    return NextResponse.json(
+      { message: "Account created successfully", ...result },
+      { status: 200 }
+    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Something went wrong";
+    const status = (err as { status?: number })?.status ?? 500;
+    return NextResponse.json({ error: message }, { status });
+  }
+}
+import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
@@ -31,8 +48,10 @@ export async function POST(req: Request) {
       { message: "Account created successfully", user: data.user },
       { status: 200 }
     );
-  } catch (err: any) {
-    console.error("Signup error:", err);
+  } catch (err: unknown) {
+    const errorMsg =
+      err instanceof Error ? err.message : "Something went wrong";
+    console.error("Signup error:", errorMsg);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }

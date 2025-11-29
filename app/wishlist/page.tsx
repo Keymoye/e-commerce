@@ -31,7 +31,7 @@ export default function WishlistPage() {
       </div>
     );
   }
-  const handleAddToCart = (item: any) => {
+  const handleAddToCart = (item: (typeof items)[0]) => {
     addToCart(item, 1);
     removeItem(item.id);
 

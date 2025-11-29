@@ -1,17 +1,20 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { randomUUID, createHash } from "crypto";
 
 export async function GET(
-  req: Request,
-  { params }: { params: { provider: string } }
-) {
+  req: NextRequest,
+  { params }: { params: Promise<{ provider: string }> }
+): Promise<NextResponse> {
   const supabase = await createServerSupabaseClient();
-  const provider = params.provider as "google" | "github";
+  const resolvedParams = await params;
+  const provider = resolvedParams.provider as "google" | "github";
 
   // PKCE
   const codeVerifier = randomUUID();
-  const codeChallenge = createHash("sha256").update(codeVerifier).digest("base64url");
+  const codeChallenge = createHash("sha256")
+    .update(codeVerifier)
+    .digest("base64url");
 
   // Extract origin dynamically
   const origin = new URL(req.url).origin;
@@ -29,7 +32,12 @@ export async function GET(
     },
   });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error || !data?.url) {
+    return NextResponse.json(
+      { error: error?.message ?? "OAuth error" },
+      { status: 500 }
+    );
+  }
 
   // Redirect user to OAuth provider
   const res = NextResponse.redirect(data.url);

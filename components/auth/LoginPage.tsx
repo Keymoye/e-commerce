@@ -1,18 +1,16 @@
 "use client";
-
-import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { useLogin } from "@/hooks/auth/useLogin";
 import { useOAuthLogin } from "@/hooks/auth/useAuthLogin";
 
 export default function LoginPage() {
-const { login, loading: loginLoading } = useLogin();
-const { handleOAuthLogin, loading: oauthLoading } = useOAuthLogin();
-
+  const { login, loading: loginLoading } = useLogin();
+  const { handleOAuthLogin, loading: oauthLoading } = useOAuthLogin();
 
   const schema = z.object({
     email: z.string().email(),
@@ -88,13 +86,13 @@ const { handleOAuthLogin, loading: oauthLoading } = useOAuthLogin();
       </div>
 
       <p className="text-center text-sm mt-4 text-foreground/80">
-        Don't have an account?{" "}
-        <a
+        Don&apos;t have an account?{" "}
+        <Link
           href="/register"
           className="text-accent font-semibold hover:underline"
         >
           Register
-        </a>
+        </Link>
       </p>
     </section>
   );

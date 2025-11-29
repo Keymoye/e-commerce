@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { z } from "zod";
 import { useToast } from "@/components/ui/toast";
+import fetchJson from "@/lib/api";
 
 export interface RegisterForm {
   fullName: string;
@@ -19,7 +19,7 @@ export function useRegister() {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/signup", {
+      await fetchJson("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -29,20 +29,15 @@ export function useRegister() {
         }),
       });
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.error || "Signup failed");
-      }
-
       toast({
         title: "Account created 🎉",
         description: "Redirecting to login...",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : "An error occurred";
       toast({
         title: "Signup failed 🚫",
-        description: err.message,
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {

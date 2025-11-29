@@ -1,14 +1,13 @@
 "use client";
-
-import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/auth/useRegister";
 
 export default function RegisterPage() {
-const { onSubmit, loading } = useRegister();
+  const { onSubmit, loading } = useRegister();
 
   const registerSchema = z
     .object({
@@ -108,9 +107,12 @@ const { onSubmit, loading } = useRegister();
 
       <p className="text-center text-sm mt-4 text-foreground/80">
         Already have an account?{" "}
-        <a href="/login" className="text-accent font-semibold hover:underline">
+        <Link
+          href="/login"
+          className="text-accent font-semibold hover:underline"
+        >
           Login
-        </a>
+        </Link>
       </p>
     </motion.section>
   );

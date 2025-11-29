@@ -10,10 +10,12 @@ export function useOAuthLogin() {
     try {
       setLoading(true);
       window.location.href = `/api/oauth/${provider}`;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Something went wrong";
       toast({
         title: "OAuth login failed ⚠️",
-        description: err.message ?? "Something went wrong",
+        description: errorMsg,
         variant: "destructive",
       });
     } finally {

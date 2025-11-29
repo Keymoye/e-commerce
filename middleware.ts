@@ -19,7 +19,15 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  // Add a request id header for tracing and logging
+  const id =
+    req.headers.get("x-request-id") ??
+    crypto.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const response = NextResponse.next();
+  response.headers.set("x-request-id", id);
+  return response;
 }
 
 export const config = {
