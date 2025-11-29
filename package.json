@@ -52,5 +52,12 @@
     "@sentry/cli": "^2.0.0",
     "playwright": "^1.40.0",
     "@axe-core/playwright": "^4.4.0"
+  },
+  "vitest": {
+    "exclude": [
+      "tests/e2e/**",
+      "tests/axe/**",
+      "playwright/**"
+    ]
   }
 }
