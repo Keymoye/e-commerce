@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
 
@@ -10,7 +9,6 @@ export function useOAuthLogin() {
   const handleOAuthLogin = (provider: "google" | "github") => {
     try {
       setLoading(true);
-      // Redirect to server route for OAuth
       window.location.href = `/api/oauth/${provider}`;
     } catch (err: any) {
       toast({
