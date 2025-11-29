@@ -44,7 +44,8 @@ export async function GET(
     res.cookies.set("sb-code-verifier", codeVerifier, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
+      domain: process.env.COOKIE_DOMAIN,
       path: "/",
     });
 
