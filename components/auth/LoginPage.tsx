@@ -10,9 +10,9 @@ import { useLogin } from "@/hooks/auth/useLogin";
 import { useOAuthLogin } from "@/hooks/auth/useAuthLogin";
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
-  const { login, loading } = useLogin();
-  const { handleOAuthLogin, loading } = useOAuthLogin();
+const { login, loading: loginLoading } = useLogin();
+const { handleOAuthLogin, loading: oauthLoading } = useOAuthLogin();
+
 
   const schema = z.object({
     email: z.string().email(),
@@ -61,17 +61,18 @@ export default function LoginPage() {
         </div>
 
         <button
-          disabled={loading}
+          disabled={loginLoading}
           type="submit"
           className="w-full bg-secondary text-background py-2 rounded-lg hover:bg-accent transition"
         >
-          {loading ? "Logging in..." : "Login"}
+          {loginLoading ? "Logging in..." : "Login"}
         </button>
       </form>
 
       <div className="mt-6 space-y-2">
         <button
           onClick={() => handleOAuthLogin("google")}
+          disabled={oauthLoading}
           className="w-full flex items-center justify-center gap-2 bg-white text-black border py-2 rounded-lg hover:bg-gray-100 transition"
         >
           <FcGoogle className="text-xl" /> Continue with Google
@@ -79,6 +80,7 @@ export default function LoginPage() {
 
         <button
           onClick={() => handleOAuthLogin("github")}
+          disabled={oauthLoading}
           className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition"
         >
           <FaGithub className="text-xl" /> Continue with GitHub
