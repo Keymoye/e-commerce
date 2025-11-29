@@ -45,7 +45,6 @@ export async function GET(
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: process.env.COOKIE_DOMAIN,
       path: "/",
     });
 
