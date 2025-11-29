@@ -2,61 +2,35 @@ import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
-  try {
-    const url = new URL(request.url);
-    const code = url.searchParams.get("code");
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  if (!code) return NextResponse.json({ error: "Missing OAuth code" }, { status: 400 });
 
-    if (!code) {
-      return NextResponse.json({ error: "Missing OAuth code" }, { status: 400 });
-    }
+  const supabase = await createServerSupabaseClient();
 
-    const supabase = await createServerSupabaseClient();
-      // ✅ Read cookie properly
-    const codeVerifier = req.cookies.get("sb-code-verifier")?.value;
+  const codeVerifier = request.cookies.get("sb-code-verifier")?.value;
+  if (!codeVerifier) return NextResponse.json({ error: "Missing PKCE code_verifier cookie" }, { status: 400 });
 
-    if (!codeVerifier) {
-      return NextResponse.json(
-        { error: "Missing PKCE code_verifier cookie" },
-        { status: 400 }
-      );
-    }
+  const { data, error } = await supabase.auth.exchangeCodeForSession(code, codeVerifier);
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-    // Exchange code + PKCE for session
-    const { data, error } = await supabase.auth.exchangeCodeForSession(
-      code,
-      codeVerifier
-    );
+  const origin = url.origin;
+  const res = NextResponse.redirect(`${origin}/`);
 
-    if (error) {
-      console.error("Exchange error:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  res.cookies.set("sb-access-token", data.session!.access_token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+  });
+  res.cookies.set("sb-refresh-token", data.session!.refresh_token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+  });
 
-    const res = NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/`
-    );
+  res.cookies.delete("sb-code-verifier");
 
-    // Set access/refresh tokens securely
-    res.cookies.set("sb-access-token", data.session!.access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-    });
-
-    res.cookies.set("sb-refresh-token", data.session!.refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "lax",
-      path: "/",
-    });
-
-    // Remove PKCE cookie
-    res.cookies.delete("sb-code-verifier");
-
-    return res;
-  } catch (err) {
-    console.error("Callback crashed:", err);
-    return NextResponse.json({ error: "Callback crashed" }, { status: 500 });
-  }
+  return res;
 }
