@@ -52,6 +52,7 @@ export function sendToAnalytics(metric: MetricValue) {
       }
     } catch (error) {
       // Silently fail if Sentry integration fails
+      logger.debug("Failed Sentry integration fails", { error: String(error) });
     }
   }
 

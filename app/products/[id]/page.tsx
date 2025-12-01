@@ -7,14 +7,24 @@ interface Params {
   id: string;
 }
 
-export async function generateMetadata({ params }: { params: Params }) {
-  const product = products.find((p) => p.id === params.id);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { id } = await params;
+  const product = products.find((p) => p.id === id);
   if (!product) return {};
   return productMetadata(product);
 }
 
-export default function ProductDetailPage({ params }: { params: Params }) {
-  const product = products.find((p) => p.id === params.id);
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<Params>;
+}) {
+  const { id } = await params;
+  const product = products.find((p) => p.id === id);
   if (!product) notFound();
-  return <ProductDetailClient productId={params.id} />;
+  return <ProductDetailClient productId={id} />;
 }

@@ -13,7 +13,7 @@ export function productMetadata(product: Product): Metadata {
     description,
     keywords: [product.category, product.brand, ...product.tags],
     openGraph: {
-      type: "product",
+      type: "website",
       url,
       title,
       description,

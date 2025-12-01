@@ -25,7 +25,7 @@ export function AuthProvider({
   initialUser?: User | null;
 }) {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(!initialUser); 
+  const [loading, setLoading] = useState(!initialUser);
 
   useEffect(() => {
     let mounted = true;
@@ -37,7 +37,10 @@ export function AuthProvider({
         } = await supabase.auth.getSession();
 
         if (!mounted) return;
-        setUser(session?.user ?? null);
+        // Only overwrite if no initial user
+        if (!user) {
+          setUser(session?.user ?? null);
+        }
       } catch (err) {
         console.error("Error syncing session:", err);
       } finally {

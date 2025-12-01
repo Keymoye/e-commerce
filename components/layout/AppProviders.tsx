@@ -5,13 +5,14 @@ import { ToastProvider } from "@/components/ui/toast";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { initWebVitals, initPerformanceObserver } from "@/lib/web-vitals";
+import type { User } from "@supabase/supabase-js";
 
 export default function AppProviders({
   children,
   initialUser,
 }: {
   children: React.ReactNode;
-  initialUser?: unknown;
+  initialUser?: User | null;
 }) {
   useEffect(() => {
     // Initialize Sentry on the client if configured

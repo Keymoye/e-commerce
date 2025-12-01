@@ -7,6 +7,7 @@ type Toast = {
   title: string;
   description?: string;
   variant?: "default" | "destructive";
+  duration?: number;
 };
 
 type ToastContextType = {
