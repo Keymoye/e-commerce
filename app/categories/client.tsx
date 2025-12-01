@@ -2,9 +2,8 @@
 
 import { useProducts } from "@/hooks/useProducts";
 import type { Product } from "@/types/product";
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function CategoriesClient() {

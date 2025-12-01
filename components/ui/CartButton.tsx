@@ -3,9 +3,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaMinus, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/hooks/cart/useCart";
+import { Product } from "@/types/product";
 
 interface CartButtonProps {
-  product?: any;
+  product?: Product;
 }
 
 export default function CartButton({ product }: CartButtonProps) {

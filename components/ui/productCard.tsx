@@ -8,7 +8,6 @@ import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
 import CartButton from "@/components/ui/CartButton";
-import { useCart } from "@/hooks/cart/useCart";
 import { useWishlist } from "@/hooks/wishlist/useWishlist";
 
 interface ProductCardProps {
@@ -16,8 +15,6 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
-  const { quantity, handleAdd, handleIncrease, handleDecrease } =
-    useCart(product);
   const { isWishlisted, handleToggle } = useWishlist(product);
 
   return (

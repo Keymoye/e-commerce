@@ -91,7 +91,7 @@ export default function CartPage() {
                     <FaMinus className="text-xs" />
                   </motion.button>
 
-                  <span className="min-w-[24px] text-center font-medium">
+                  <span className="min-w-6 text-center font-medium">
                     {item.quantity}
                   </span>
 

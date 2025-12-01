@@ -1,24 +1,20 @@
+import { notFound } from "next/navigation";
 import ProductDetailClient from "./client";
 import { products } from "@/lib/products";
 import { productMetadata } from "@/lib/seo";
-import { notFound } from "next/navigation";
 
-const ProductDetailClientTyped = ProductDetailClient as any;
-
-interface ProductDetailPageProps {
-  params: {
-    id: string;
-  };
+interface Params {
+  id: string;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: Params }) {
   const product = products.find((p) => p.id === params.id);
   if (!product) return {};
   return productMetadata(product);
 }
 
-export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+export default function ProductDetailPage({ params }: { params: Params }) {
   const product = products.find((p) => p.id === params.id);
   if (!product) notFound();
-  return <ProductDetailClientTyped productId={params.id} />;
+  return <ProductDetailClient productId={params.id} />;
 }
