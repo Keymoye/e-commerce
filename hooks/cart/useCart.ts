@@ -6,7 +6,7 @@ import { CartStore } from "@/store/cartStore";
 import { Product } from "@/types/product";
 import { useToast } from "@/components/ui/toast";
 
-export function useCart(product?: Product) {
+export function useCart(product?: Product, id?: string) {
   const { toast } = useToast();
 
   /** ---- GLOBAL STORE SELECTORS (memoized automatically by Zustand) ---- */
@@ -19,11 +19,12 @@ export function useCart(product?: Product) {
   const removeItem = CartStore((s) => s.removeItem);
   const clear = CartStore((s) => s.clear);
 
-  /** ---- PRODUCT-SPECIFIC DATA (memoized) ---- */
-  const cartItem = useMemo(
-    () => (product ? items.find((i) => i.id === product.id) : undefined),
-    [items, product]
-  );
+  // Find cart item either by product or by id
+  const cartItem = useMemo(() => {
+    if (product) return items.find((i) => i.id === product.id);
+    if (id) return items.find((i) => i.id === id);
+    return undefined;
+  }, [items, product, id]);
 
   const quantity = cartItem?.quantity ?? 0;
 
@@ -44,31 +45,31 @@ export function useCart(product?: Product) {
   );
 
   const handleRemove = useCallback(() => {
-    if (!product) return;
-    removeItem(product.id);
+    if (!cartItem) return;
+    removeItem(cartItem.id);
 
     toast({
       title: "Removed from cart 🗑️",
-      description: `${product.name} removed from your cart.`,
+      description: `${cartItem.name} removed from your cart.`,
       duration: 1800,
     });
-  }, [product, removeItem, toast]);
+  }, [cartItem, removeItem, toast]);
 
   const handleIncrease = useCallback(() => {
-    if (!product) return;
+    if (!cartItem) return;
     const newQty = quantity + 1;
 
-    updateQuantity(product.id, newQty);
+    updateQuantity(cartItem.id, newQty);
 
     toast({
       title: "Quantity Updated",
-      description: `${product.name} → ${newQty}`,
+      description: `${cartItem.name} → ${newQty}`,
       duration: 1600,
     });
-  }, [product, quantity, updateQuantity, toast]);
+  }, [cartItem, quantity, updateQuantity, toast]);
 
   const handleDecrease = useCallback(() => {
-    if (!product) return;
+    if (!cartItem) return;
 
     if (quantity <= 1) {
       handleRemove();
@@ -76,14 +77,14 @@ export function useCart(product?: Product) {
     }
 
     const newQty = quantity - 1;
-    updateQuantity(product.id, newQty);
+    updateQuantity(cartItem.id, newQty);
 
     toast({
       title: "Quantity Updated",
-      description: `${product.name} → ${newQty}`,
+      description: `${cartItem.name} → ${newQty}`,
       duration: 1600,
     });
-  }, [product, quantity, updateQuantity, handleRemove, toast]);
+  }, [cartItem, quantity, updateQuantity, handleRemove, toast]);
 
   /** ---- EXPORTED API ---- */
   return {

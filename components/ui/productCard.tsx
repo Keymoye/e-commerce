@@ -45,21 +45,16 @@ function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
 
+        {/* WISHLIST BUTTON */}
         <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            handleToggle();
-          }}
+          onClick={handleToggle}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          className={`absolute top-2 right-2 p-2 rounded-full bg-accent transition-colors ${
+          className={`absolute top-2 right-2 p-2 rounded-full bg-accent ${
             isWishlisted ? "ring-2 ring-red-400" : ""
           }`}
         >
           <FaHeart
-            className={`text-lg ${
-              isWishlisted ? "text-red-500" : "text-foreground"
-            }`}
+            className={isWishlisted ? "text-red-500" : "text-foreground"}
           />
         </motion.button>
 
