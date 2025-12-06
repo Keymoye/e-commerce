@@ -95,6 +95,7 @@ function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* CART BUTTON */}
+        <div className="mt-2"></div>
         <CartButton product={product} />
       </motion.article>
     </>
