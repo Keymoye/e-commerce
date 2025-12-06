@@ -4,46 +4,44 @@ import logger from "@/lib/logger";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const publicRoutes = [
-    "/login",
-    "/",
-    "/cart",
-    "/categories",
-    "/auth",
-    "/api",
-    "/favicon.ico",
-  ];
-  const isPublic = publicRoutes.some((p) => pathname.startsWith(p));
+  // Only two protected routes
+  const protectedRoutes = ["/profile", "/checkout"];
+  const isProtected = protectedRoutes.some((p) => pathname.startsWith(p));
 
-  const session = req.cookies.get("sb-access-token");
+  // Read Supabase session cookie
+  const session = req.cookies.get("sb-access-token")?.value;
 
-  const id =
+  const requestId =
     req.headers.get("x-request-id") ??
-    crypto.randomUUID?.() ??
-    `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    crypto.randomUUID() ??
+    Date.now().toString();
 
-  if (!isPublic && !session) {
+  if (isProtected && !session) {
     logger.warn("Middleware", `Blocked access to protected route`, {
       path: pathname,
-      requestId: id,
+      requestId,
     });
+
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(url);
   }
 
-  const response = NextResponse.next();
-  response.headers.set("x-request-id", id);
-  logger.debug("Middleware", "Request processed", {
+  const res = NextResponse.next();
+  res.headers.set("x-request-id", requestId);
+
+  logger.debug("Middleware", "Request allowed", {
     path: pathname,
-    requestId: id,
+    requestId,
   });
-  return response;
+
+  return res;
 }
 
+// Apply middleware to all pages except static assets
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|_next/data|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
