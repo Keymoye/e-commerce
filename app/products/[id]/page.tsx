@@ -1,16 +1,10 @@
-import { notFound } from "next/navigation";
 import ProductDetailClient from "./client";
-import { products } from "@/lib/products";
 import { productMetadata } from "@/lib/seo";
+import { notFound } from "next/navigation";
+import { getProductById } from "@/services/products";
 
-// Define the shape of the route params
-type Params = {
-  id: string;
-};
-
-export async function generateMetadata({ params }: { params: Params }) {
-  const { id } = params;
-  const product = products.find((p) => p.id === id);
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const product = await getProductById(params.id);
   if (!product) return {};
   return productMetadata(product);
 }
@@ -18,10 +12,11 @@ export async function generateMetadata({ params }: { params: Params }) {
 export default async function ProductDetailPage({
   params,
 }: {
-  params: Params;
+  params: { id: string };
 }) {
-  const { id } = params;
-  const product = products.find((p) => p.id === id);
+  const product = await getProductById(params.id);
+
   if (!product) notFound();
-  return <ProductDetailClient productId={id} />;
+
+  return <ProductDetailClient product={product} />;
 }

@@ -19,7 +19,7 @@ export function productMetadata(product: Product): Metadata {
       description,
       images: [
         {
-          url: product.image_urls || "/5.webp",
+          url: product.image_urls?.[0] || "/5.webp",
           width: 400,
           height: 400,
           alt: product.name,
@@ -30,7 +30,7 @@ export function productMetadata(product: Product): Metadata {
       card: "summary_large_image",
       title,
       description,
-      images: [product.image_urls || "/5.webp"],
+      images: [product.image_urls?.[0] || "/5.webp"],
     },
   };
 }
@@ -79,7 +79,7 @@ export function productJsonLd(product: Product): string {
     "@context": "https://schema.org/",
     "@type": "Product",
     name: product.name,
-    image: product.image_urls || "/5.webp",
+    image: product.image_urls?.[0] || "/5.webp",
     description: product.description,
     brand: {
       "@type": "Brand",

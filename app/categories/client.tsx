@@ -1,27 +1,28 @@
 "use client";
 
 import { useProducts } from "@/hooks/useProducts";
-import type { Product } from "@/types/product";
 import { useMemo } from "react";
-import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import type { Product } from "@/types/product";
 
 export default function CategoriesClient() {
-  const { data: products } = useProducts();
+  const { data: products, loading, error } = useProducts();
   const router = useRouter();
 
   const categories = useMemo(() => {
+    if (!products) return [];
     const categoryMap = new Map<
       string,
       { count: number; avgPrice: number; icon: string }
     >();
 
-    products?.forEach((p: Product) => {
+    products.forEach((p: Product) => {
       const cat = p.category || "Uncategorized";
       const existing = categoryMap.get(cat) || {
         count: 0,
         avgPrice: 0,
-        icon: "📦",
+        icon: getCategoryIcon(cat),
       };
 
       const newCount = existing.count + 1;
@@ -39,6 +40,10 @@ export default function CategoriesClient() {
       (a, b) => b.count - a.count
     );
   }, [products]);
+
+  if (loading) return <p>Loading categories...</p>;
+  if (error)
+    return <p className="text-red-500">Failed to load categories: {error}</p>;
 
   return (
     <section className="p-6 max-w-5xl mx-auto">
@@ -69,26 +74,14 @@ export default function CategoriesClient() {
           >
             <div className="text-4xl mb-3">{cat.icon}</div>
             <h3 className="font-semibold text-lg mb-2">{cat.name}</h3>
-
-            <div className="space-y-2 text-sm text-foreground/70">
-              <p>
-                <span className="font-semibold text-accent">{cat.count}</span>{" "}
-                products
-              </p>
-              <p>
-                Avg. Price:{" "}
-                <span className="font-semibold">
-                  ${cat.avgPrice.toFixed(2)}
-                </span>
-              </p>
-            </div>
-
-            <motion.div
-              whileHover={{ x: 5 }}
-              className="mt-4 text-secondary hover:text-accent transition-colors"
-            >
+            <p className="text-sm text-foreground/70">
+              <span className="font-semibold text-accent">{cat.count}</span>{" "}
+              products • Avg. Price:{" "}
+              <span className="font-semibold">${cat.avgPrice.toFixed(2)}</span>
+            </p>
+            <div className="mt-4 text-secondary hover:text-accent transition-colors">
               View All →
-            </motion.div>
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -106,6 +99,5 @@ function getCategoryIcon(category: string): string {
     "Digestive Health": "🫒",
     default: "📦",
   };
-
   return icons[category] || icons.default;
 }

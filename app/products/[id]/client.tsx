@@ -1,6 +1,5 @@
 "use client";
 
-import { useProducts } from "@/hooks/useProducts";
 import type { Product } from "@/types/product";
 import Image from "next/image";
 import { CartStore } from "@/store/cartStore";
@@ -9,38 +8,19 @@ import { motion } from "framer-motion";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
 import { useToast } from "@/components/ui/toast";
-import { notFound } from "next/navigation";
 import { useEffect } from "react";
 import { productJsonLd } from "@/lib/seo";
 
+interface ProductDetailClientProps {
+  product: Product;
+}
+
 export default function ProductDetailClient({
-  productId,
-}: {
-  productId: string;
-}) {
-  const { data: products } = useProducts();
+  product,
+}: ProductDetailClientProps) {
   const { addItem: addToCart } = CartStore();
   const { toggleWishlist, isWishlisted } = WishlistStore();
   const { toast } = useToast();
-  const product = products?.find((p: Product) => p.id === productId);
-
-  // Inject JSON-LD structured data for SEO
-  useEffect(() => {
-    if (product) {
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.innerHTML = productJsonLd(product);
-      document.head.appendChild(script);
-
-      return () => {
-        document.head.removeChild(script);
-      };
-    }
-  }, [product]);
-
-  if (!product) {
-    notFound();
-  }
 
   const inWishlist = isWishlisted(product.id);
 
@@ -62,6 +42,21 @@ export default function ProductDetailClient({
     });
   };
 
+  // Inject JSON-LD structured data
+  useEffect(() => {
+    if (!product) return;
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.innerHTML = productJsonLd(product);
+    document.head.appendChild(script);
+
+    // Cleanup: remove the script
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [product]);
+
   return (
     <main className="max-w-4xl mx-auto p-4 sm:p-6">
       <motion.div
@@ -75,14 +70,12 @@ export default function ProductDetailClient({
           className="bg-primary rounded-xl p-6 shadow-md"
         >
           <Image
-            src={product.image_urls || "/5.webp"}
+            src={product.image_urls?.[0] || "/5.webp"}
             alt={`${product.name} - ${product.brand}`}
             width={400}
             height={400}
             className="w-full h-auto object-contain rounded-lg"
             priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            placeholder="empty"
           />
         </motion.div>
 
@@ -92,14 +85,12 @@ export default function ProductDetailClient({
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <div className="mb-4">
-            <motion.h1 layout className="text-3xl sm:text-4xl font-bold mb-2">
-              {product.name}
-            </motion.h1>
-            <p className="text-sm text-foreground/70">
-              {product.brand} • {product.category}
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+            {product.name}
+          </h1>
+          <p className="text-sm text-foreground/70">
+            {product.brand} • {product.category}
+          </p>
 
           {/* Rating */}
           <div className="flex items-center gap-3 mb-4">
@@ -118,7 +109,7 @@ export default function ProductDetailClient({
               className={`text-sm font-semibold ${product.stock > 0 ? "text-green-500" : "text-red-500"}`}
             >
               {product.stock > 0
-                ? `In Stock (${product.stock} available)`
+                ? `In Stock (${product.stock})`
                 : "Out of Stock"}
             </p>
           </div>
@@ -132,7 +123,7 @@ export default function ProductDetailClient({
           </div>
 
           {/* Tags */}
-          {product.tags && product.tags.length > 0 && (
+          {product.tags?.length > 0 && (
             <div className="mb-6">
               <h2 className="font-semibold mb-2">Tags</h2>
               <div className="flex flex-wrap gap-2">
@@ -167,19 +158,16 @@ export default function ProductDetailClient({
           )}
 
           {/* Actions */}
-          <motion.div className="flex gap-3">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+          <div className="flex gap-3">
+            <button
               onClick={handleAddToCart}
               disabled={product.stock === 0}
               className="flex-1 flex items-center justify-center gap-2 bg-secondary hover:bg-accent text-background py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
-              <FaShoppingCart />
-              Add to Cart
-            </motion.button>
+              <FaShoppingCart /> Add to Cart
+            </button>
 
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={handleWishlist}
               className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold border-2 transition ${
                 inWishlist
@@ -189,8 +177,8 @@ export default function ProductDetailClient({
             >
               <FaHeart className={inWishlist ? "fill-current" : ""} />
               {inWishlist ? "Wishlisted" : "Wishlist"}
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     </main>

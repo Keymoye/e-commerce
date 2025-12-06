@@ -23,7 +23,7 @@ function ProductCard({ product }: ProductCardProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.15 }}
-        className="p-4 bg-primary rounded-2xl shadow-sm flex flex-col items-stretch transition-all duration-300 cursor-pointer"
+        className="p-4 relative bg-primary rounded-2xl shadow-sm flex flex-col items-stretch transition-all duration-300 cursor-pointer"
       >
         {/* IMAGE */}
         <Link href={`/products/${product.id}`}>
@@ -34,7 +34,7 @@ function ProductCard({ product }: ProductCardProps) {
               className="w-full"
             >
               <Image
-                src={product.image_urls || "/5.webp"}
+                src={product.image_urls?.[0] || "/5.webp"}
                 alt={`${product.name} - ${product.brand}`}
                 width={320}
                 height={240}

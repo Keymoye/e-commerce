@@ -1,28 +1,46 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import { Product } from "@/types/product";
-import { products as mockProducts } from "@/lib/products";
+"use client";
 
-export function useProducts() {
-  const [data, setData] = useState<Product[]>([]);
+import { useState, useEffect } from "react";
+import type { Product } from "@/types/product";
+import { getProducts, getProductById } from "@/services/products";
+
+interface UseProductsOptions {
+  category?: string;
+  search?: string;
+  sortBy?: "price" | "rating" | "newest";
+  limit?: number;
+}
+
+export function useProducts(options?: UseProductsOptions) {
+  const [data, setData] = useState<Product[] | null>(null);
   const [loading, setLoading] = useState(true);
-  const search = useSearchParams();
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
-    // Simulate fetching from an API — replace with fetch to `/api/products` when available
-    const timeout = setTimeout(() => {
-      const category = search?.get("category") ?? undefined;
-      const filtered =
-        category && category !== "all"
-          ? mockProducts.filter((p) => p.category === category)
-          : mockProducts;
+    setLoading(true);
+    getProducts(options)
+      .then((res) => setData(res))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [options?.category, options?.search, options?.sortBy, options?.limit]);
 
-      setData(filtered);
-      setLoading(false);
-    }, 150);
+  return { data, loading, error };
+}
 
-    return () => clearTimeout(timeout);
-  }, [search]);
+export function useProductById(id: string) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
 
-  return { data, loading };
+  useEffect(() => {
+    if (!id) return;
+
+    setLoading(true);
+    getProductById(id)
+      .then((res) => setProduct(res))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  return { product, loading, error };
 }

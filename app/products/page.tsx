@@ -1,12 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
+import dynamic from "next/dynamic";
 import ProductSkeleton from "@/components/ui/productSkeleton";
-import logger from "@/lib/logger";
-import type { Product } from "@/types/product";
 import { motion } from "framer-motion";
+import type { Product } from "@/types/product";
 
 const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
   loading: () => (
@@ -19,56 +18,32 @@ const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
 });
 
 export default function ProductsPage() {
-  const { data: products, loading } = useProducts();
   const [sortBy, setSortBy] = useState<
     "price-asc" | "price-desc" | "rating" | "newest"
   >("newest");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  logger.debug("Products page", { loading, count: products?.length ?? 0 });
+  // Use the fixed hook with server-side filtering
+  const {
+    data: products,
+    loading,
+    error,
+  } = useProducts({
+    category: categoryFilter,
+    search: searchQuery,
+    sortBy,
+  });
 
-  const categories = useMemo(
-    () => ["all", ...new Set(products?.map((p) => p.category) ?? [])],
-    [products]
-  );
-
-  const filtered = useMemo(() => {
-    let result = products ?? [];
-
-    if (categoryFilter !== "all") {
-      result = result.filter((p) => p.category === categoryFilter);
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
-          p.brand?.toLowerCase().includes(q)
-      );
-    }
-
-    // Sort
-    switch (sortBy) {
-      case "price-asc":
-        result = [...result].sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        result = [...result].sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        result = [...result].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-        break;
-      case "newest":
-      default:
-        // Assume order in products array is newest
-        break;
-    }
-
-    return result;
-  }, [products, categoryFilter, searchQuery, sortBy]);
+  const categories = [
+    "all",
+    "Pain Relief & Anti-inflammatory",
+    "Supplements",
+    "Beauty & Skincare",
+    "Vitamins",
+    "Cold & Flu",
+    "Digestive Health",
+  ];
 
   if (loading) {
     return (
@@ -80,8 +55,15 @@ export default function ProductsPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="text-center text-red-500 py-10">
+        Failed to load products: {error}
+      </div>
+    );
+  }
+
   if (!products || products.length === 0) {
-    logger.warn("No products available");
     return (
       <div className="flex justify-center items-center h-[60vh] text-foreground/60">
         No products available 🛒
@@ -143,27 +125,21 @@ export default function ProductsPage() {
         </div>
 
         <p className="text-sm text-foreground/60 mt-3">
-          Showing {filtered.length} of {products.length} products
+          Showing {products.length} products
         </p>
       </motion.div>
 
       {/* Products Grid */}
-      {filtered.length === 0 ? (
-        <div className="flex justify-center items-center h-[40vh] text-foreground/60">
-          No products match your filters 🔍
-        </div>
-      ) : (
-        <motion.div
-          layout
-          className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
-        >
-          {filtered.map((p: Product) => (
-            <motion.div key={p.id} layout>
-              <ProductCard product={p} />
-            </motion.div>
-          ))}
-        </motion.div>
-      )}
+      <motion.div
+        layout
+        className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
+      >
+        {products.map((p: Product) => (
+          <motion.div key={p.id} layout>
+            <ProductCard product={p} />
+          </motion.div>
+        ))}
+      </motion.div>
     </main>
   );
 }

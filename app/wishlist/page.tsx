@@ -66,7 +66,7 @@ export default function WishlistPage() {
             >
               <div className="relative w-full">
                 <Image
-                  src={item.image_urls || "/5.webp"}
+                  src={item.image_urls?.[0] || "/5.webp"}
                   alt={`${item.name} - ${item.brand}`}
                   width={240}
                   height={200}
