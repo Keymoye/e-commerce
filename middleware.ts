@@ -1,10 +1,9 @@
-// middleware.ts
 import { NextResponse, type NextRequest } from "next/server";
+import logger from "@/lib/logger";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // PUBLIC ROUTES
   const publicRoutes = [
     "/login",
     "/",
@@ -16,25 +15,30 @@ export function middleware(req: NextRequest) {
   ];
   const isPublic = publicRoutes.some((p) => pathname.startsWith(p));
 
-  // Get Supabase session cookie
   const session = req.cookies.get("sb-access-token");
 
-  // If route is protected and no session → redirect
+  const id =
+    req.headers.get("x-request-id") ??
+    crypto.randomUUID?.() ??
+    `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
   if (!isPublic && !session) {
+    logger.warn("Middleware", `Blocked access to protected route`, {
+      path: pathname,
+      requestId: id,
+    });
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(url);
   }
 
-  // Add a request id header for tracing and logging
-  const id =
-    req.headers.get("x-request-id") ??
-    crypto.randomUUID?.() ??
-    `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
   const response = NextResponse.next();
   response.headers.set("x-request-id", id);
+  logger.debug("Middleware", "Request processed", {
+    path: pathname,
+    requestId: id,
+  });
   return response;
 }
 

@@ -1,9 +1,16 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import Loading from "@/app/loading";
+import logger from "@/lib/logger";
 
 interface AuthContextType {
   user: User | null;
@@ -27,48 +34,46 @@ export function AuthProvider({
   const [user, setUser] = useState<User | null>(initialUser);
   const [loading, setLoading] = useState(!initialUser);
 
+  // Centralized session fetch
+  const fetchSession = useCallback(async () => {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      logger.info("AuthProvider", "Session synced", {
+        userId: session?.user?.id,
+      });
+    } catch (err) {
+      logger.error("AuthProvider", "Failed to sync session", {
+        error: String(err),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    let mounted = true;
-
-    const syncSession = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-
-        if (!mounted) return;
-        // Only overwrite if no initial user
-        if (!user) {
-          setUser(session?.user ?? null);
-        }
-      } catch (err) {
-        console.error("Error syncing session:", err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    syncSession();
+    fetchSession();
 
     const { data: subscription } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        if (!mounted) return;
         setUser(session?.user ?? null);
+        logger.info("AuthProvider", "Auth state changed", {
+          userId: session?.user?.id,
+        });
       }
     );
 
     return () => {
-      mounted = false;
       subscription.subscription.unsubscribe();
     };
-  }, []);
+  }, [fetchSession]);
 
-  const refreshUser = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    setUser(session?.user ?? null);
-  };
+  const refreshUser = useCallback(async () => {
+    await fetchSession();
+    logger.debug("AuthProvider", "User manually refreshed");
+  }, [fetchSession]);
 
   if (loading) return <Loading />;
 
