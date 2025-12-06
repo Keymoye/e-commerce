@@ -10,11 +10,6 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-console.log("Loaded URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log(
-  "Loaded Service Key:",
-  process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 6)
-);
 
 // 2️⃣ Define categories and related image keywords
 const categories = [
