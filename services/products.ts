@@ -9,7 +9,7 @@ const supabase = createClient(
 export async function getProducts(filters?: {
   category?: string;
   search?: string;
-  sortBy?: "price" | "rating" | "newest";
+  sortBy?: "price-asc" | "price-desc" | "rating" | "newest";
   limit?: number;
 }): Promise<Product[]> {
   let query = supabase.from("products").select("*");
@@ -25,14 +25,14 @@ export async function getProducts(filters?: {
   }
 
   // Sorting
-  if (filters?.sortBy === "price") {
+  if (filters?.sortBy === "price-asc") {
     query = query.order("price", { ascending: true });
+  } else if (filters?.sortBy === "price-desc") {
+    query = query.order("price", { ascending: false });
   } else if (filters?.sortBy === "rating") {
     query = query.order("rating", { ascending: false });
-  } else if (filters?.sortBy === "newest") {
-    query = query.order("created_at", { ascending: false });
   } else {
-    // default sort: newest first
+    // newest
     query = query.order("created_at", { ascending: false });
   }
 

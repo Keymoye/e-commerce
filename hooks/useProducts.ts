@@ -7,7 +7,7 @@ import { getProducts, getProductById } from "@/services/products";
 interface UseProductsOptions {
   category?: string;
   search?: string;
-  sortBy?: "price" | "rating" | "newest";
+  sortBy?: "price-asc" | "price-desc" | "rating" | "newest";
   limit?: number;
 }
 

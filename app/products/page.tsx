@@ -30,7 +30,7 @@ export default function ProductsPage() {
     loading,
     error,
   } = useProducts({
-    category: categoryFilter,
+    category: categoryFilter === "all" ? undefined : categoryFilter,
     search: searchQuery,
     sortBy,
   });
