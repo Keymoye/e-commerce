@@ -1,4 +1,3 @@
-// components/products/ProductsHub.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -15,20 +14,13 @@ const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
 });
 
 type ProductsHubProps =
-  | {
-      mode: "featured"; // Home: simple limited list (page 1 only)
-      limit?: number;
-    }
-  | {
-      mode: "full"; // Products page: paginated with filters
-      initialPage?: number;
-      pageSize?: number;
-    };
+  | { mode: "featured"; limit?: number }
+  | { mode: "full"; initialPage?: number; pageSize?: number };
 
 export default function ProductsHub(props: ProductsHubProps) {
-  if (props.mode === "featured")
-    return <FeaturedProducts limit={props.limit ?? 8} />;
-  return (
+  return props.mode === "featured" ? (
+    <FeaturedProducts limit={props.limit ?? 8} />
+  ) : (
     <FullProducts
       initialPage={props.initialPage ?? 1}
       pageSize={props.pageSize ?? 12}
@@ -36,35 +28,29 @@ export default function ProductsHub(props: ProductsHubProps) {
   );
 }
 
-/* ---------------- Featured (Home) ---------------- */
+/* Featured Products (Home) */
 function FeaturedProducts({ limit }: { limit: number }) {
-  // Featured uses paginated hook but limited to page=1, pageSize = limit
   const { products, loading } = usePaginatedProducts({
     page: 1,
     pageSize: limit,
-    // no filters/search/sort for featured mode (fast path)
   });
 
   return (
     <section aria-label="Featured products">
-      {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: limit }).map((_, i) => (
-            <ProductSkeleton key={i} />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {products?.map((p: Product) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+        {loading
+          ? Array.from({ length: limit }).map((_, i) => (
+              <ProductSkeleton key={i} />
+            ))
+          : products?.map((p: Product) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+      </div>
     </section>
   );
 }
 
-/* ---------------- Full (Products page) ---------------- */
+/* Full Products (Products Page) */
 function FullProducts({
   initialPage,
   pageSize,
@@ -72,16 +58,14 @@ function FullProducts({
   initialPage: number;
   pageSize: number;
 }) {
-  // Local UI states
-  const [page, setPage] = useState<number>(initialPage);
-  const [category, setCategory] = useState<string>("all");
+  const [page, setPage] = useState(initialPage);
+  const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState<
     "price-asc" | "price-desc" | "rating" | "newest"
   >("newest");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
 
-  // Hook that calls getPaginatedProducts
   const { products, totalPages, loading, error } = usePaginatedProducts({
     page,
     pageSize,
@@ -90,24 +74,13 @@ function FullProducts({
     sortBy,
   });
 
-  // preserve layout: skeleton count equals pageSize so grid doesn't jump
-  const skeletonCount = pageSize;
-
-  // Reset to first page on filter change
-  useEffect(() => {
-    setPage(1);
-  }, [category, sortBy, debouncedSearch]);
-
+  useEffect(() => setPage(1), [category, sortBy, debouncedSearch]);
   const showing = products?.length ?? 0;
 
   return (
     <section aria-label="Product listing">
       {/* Filters */}
-      <div
-        className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4"
-        role="region"
-        aria-label="Product filters"
-      >
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-4">
         <div>
           <label className="block text-sm font-medium mb-2">Search</label>
           <input
@@ -119,7 +92,6 @@ function FullProducts({
             className="w-full px-3 py-2 rounded-lg border border-foreground/20 bg-background focus:ring-2 focus:ring-accent outline-none"
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-2">Category</label>
           <select
@@ -137,7 +109,6 @@ function FullProducts({
             <option value="Digestive Health">Digestive Health</option>
           </select>
         </div>
-
         <div>
           <label className="block text-sm font-medium mb-2">Sort By</label>
           <select
@@ -154,33 +125,24 @@ function FullProducts({
         </div>
       </div>
 
-      {/* Grid */}
-      {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: skeletonCount }).map((_, i) => (
-            <ProductSkeleton key={i} />
-          ))}
-        </div>
-      ) : products && products.length > 0 ? (
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+        {loading
+          ? Array.from({ length: pageSize }).map((_, i) => (
+              <ProductSkeleton key={i} />
+            ))
+          : products?.map((p: Product) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+      </div>
+
+      {/* Showing + Pagination */}
+      {!loading && products && products.length > 0 && (
         <>
-          <div className="text-sm text-foreground/60 mb-4">
+          <div className="text-sm text-foreground/60 mt-4 mb-2">
             Showing {showing} products • Page {page} of {totalPages}
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((p: Product) => (
-              <motion.div
-                key={p.id}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                <ProductCard product={p} />
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex justify-center">
+          <div className="flex justify-center mt-2">
             <Pagination
               page={page}
               totalPages={totalPages}
@@ -188,11 +150,16 @@ function FullProducts({
             />
           </div>
         </>
-      ) : (
+      )}
+
+      {/* Empty state */}
+      {!loading && (!products || products.length === 0) && (
         <div className="flex justify-center items-center h-[40vh] text-foreground/60">
           No products found 🔍
         </div>
       )}
+
+      {/* Error */}
       {error && (
         <div className="mt-4 text-center text-red-500">
           Error loading products: {String(error)}

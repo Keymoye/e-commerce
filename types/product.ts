@@ -13,3 +13,10 @@ export interface Product {
   specs?: Record<string, string | number | boolean>;
   reviews?: { author: string; rating: number; comment: string }[];
 }
+
+// types/product.ts
+export interface CategoryStats {
+  name: string;
+  count: number;
+  avgPrice: number;
+}

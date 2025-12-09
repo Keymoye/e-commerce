@@ -1,45 +1,12 @@
 "use client";
 
-import { useProducts } from "@/hooks/useProducts";
-import { useMemo } from "react";
+import { useCategories } from "@/hooks/useProducts";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import type { Product } from "@/types/product";
 
 export default function CategoriesClient() {
-  const { data: products, loading, error } = useProducts();
+  const { categories, loading, error } = useCategories();
   const router = useRouter();
-
-  const categories = useMemo(() => {
-    if (!products) return [];
-    const categoryMap = new Map<
-      string,
-      { count: number; avgPrice: number; icon: string }
-    >();
-
-    products.forEach((p: Product) => {
-      const cat = p.category || "Uncategorized";
-      const existing = categoryMap.get(cat) || {
-        count: 0,
-        avgPrice: 0,
-        icon: getCategoryIcon(cat),
-      };
-
-      const newCount = existing.count + 1;
-      const newAvgPrice =
-        (existing.avgPrice * existing.count + p.price) / newCount;
-
-      categoryMap.set(cat, {
-        count: newCount,
-        avgPrice: newAvgPrice,
-        icon: getCategoryIcon(cat),
-      });
-    });
-
-    return Array.from(categoryMap, ([name, data]) => ({ name, ...data })).sort(
-      (a, b) => b.count - a.count
-    );
-  }, [products]);
 
   if (loading) return <p>Loading categories...</p>;
   if (error)
@@ -58,11 +25,16 @@ export default function CategoriesClient() {
         Explore our {categories.length} product categories
       </p>
 
-      <motion.div layout className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <motion.div
+        layout
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+      >
         {categories.map((cat, i) => (
           <motion.div
             key={cat.name}
             layout
+            role="button"
+            aria-label={`View all products in ${cat.name}`}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
@@ -70,11 +42,11 @@ export default function CategoriesClient() {
             onClick={() =>
               router.push(`/products?category=${encodeURIComponent(cat.name)}`)
             }
-            className="bg-primary p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all"
+            className="bg-primary p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all flex flex-col justify-between min-h-[200px]"
           >
-            <div className="text-4xl mb-3">{cat.icon}</div>
-            <h3 className="font-semibold text-lg mb-2">{cat.name}</h3>
-            <p className="text-sm text-foreground/70">
+            <div className="text-4xl mb-3">{getCategoryIcon(cat.name)}</div>
+            <h3 className="font-semibold text-lg mb-2 truncate">{cat.name}</h3>
+            <p className="text-sm text-foreground/70 truncate">
               <span className="font-semibold text-accent">{cat.count}</span>{" "}
               products • Avg. Price:{" "}
               <span className="font-semibold">${cat.avgPrice.toFixed(2)}</span>

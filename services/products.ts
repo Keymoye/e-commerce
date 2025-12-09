@@ -1,6 +1,6 @@
 // services/products.ts
 import { supabase } from "@/lib/supabase/client";
-import type { Product } from "@/types/product";
+import type { Product, CategoryStats } from "@/types/product";
 
 export async function getProductById(id: string): Promise<Product | null> {
   const { data, error } = await supabase
@@ -73,13 +73,30 @@ export async function getPaginatedProducts(
   };
 }
 
-export async function getCategories(): Promise<string[]> {
-  const { data, error } = await supabase.from("products").select("category");
+// Returns categories with counts and average prices
+export async function getCategoriesStats(): Promise<CategoryStats[]> {
+  // Select category, count, and average price
+  const { data, error } = await supabase
+    .from("products")
+    .select("category, price", { count: "exact" });
 
   if (error) throw error;
 
-  // Extract unique categories
-  const unique = Array.from(new Set(data.map((p) => p.category)));
+  // Aggregate counts and avg price
+  const categoryMap = new Map<string, { count: number; avgPrice: number }>();
 
-  return ["all", ...unique];
+  data.forEach((p: any) => {
+    const cat = p.category || "Uncategorized";
+    const existing = categoryMap.get(cat) || { count: 0, avgPrice: 0 };
+    const newCount = existing.count + 1;
+    const newAvgPrice =
+      (existing.avgPrice * existing.count + p.price) / newCount;
+    categoryMap.set(cat, { count: newCount, avgPrice: newAvgPrice });
+  });
+
+  return Array.from(categoryMap, ([name, stats]) => ({
+    name,
+    count: stats.count,
+    avgPrice: stats.avgPrice,
+  }));
 }
