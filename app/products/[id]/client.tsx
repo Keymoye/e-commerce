@@ -70,7 +70,7 @@ export default function ProductDetailClient({
           className="bg-primary rounded-xl p-6 shadow-md"
         >
           <Image
-            src={product.image_urls?.[0] || "/5.webp"}
+            src={"/5.webp"}
             alt={`${product.name} - ${product.brand}`}
             width={400}
             height={400}

@@ -36,32 +36,32 @@ This ensures the app is secure, fast, and consistent across all pages.
 
 📦 High-Level Architecture
 ┌────────────────────────┐
-│     Browser Request     │
+│ Browser Request │
 └────────────┬───────────┘
-             │
-             ▼
+│
+▼
 ┌────────────────────────┐
-│     Middleware (Edge)   │
-│  Checks sb-access-token │
-│   Redirect if missing   │
+│ Middleware (Edge) │
+│ Checks sb-access-token │
+│ Redirect if missing │
 └────────────┬───────────┘
-             │
-             ▼
+│
+▼
 ┌────────────────────────────────────────────┐
-│      Server Component / Layout (SSR)       │
-│ createServerSupabaseClient() → getUser()   │
-│    Validates session with Supabase         │
+│ Server Component / Layout (SSR) │
+│ createServerSupabaseClient() → getUser() │
+│ Validates session with Supabase │
 └────────────┬───────────────────────────────┘
-             │
-             ▼
+│
+▼
 ┌────────────────────────────────────────────┐
-│       <AuthProvider initialUser={user}>    │
-│ Hydration → Session Sync → Auth Listener   │
+│ <AuthProvider initialUser={user}> │
+│ Hydration → Session Sync → Auth Listener │
 └────────────┬───────────────────────────────┘
-             │
-             ▼
+│
+▼
 ┌────────────────────────────────────────────┐
-│           Client Components (useAuth)       │
+│ Client Components (useAuth) │
 └────────────────────────────────────────────┘
 
 🧠 The Big Idea
@@ -71,12 +71,12 @@ Server components decide who the user actually is.
 Client provider keeps everything reactive.
 
 🧱 Detailed Flow Breakdown
+
 1. Browser Requests a Page
 
 The user requests a protected route like:
 
 /dashboard
-
 
 Before anything loads, Next.js runs the middleware.
 
@@ -111,7 +111,6 @@ Once the request reaches your server code:
 const supabase = createServerSupabaseClient();
 const { data: { user } } = await supabase.auth.getUser();
 
-
 This step:
 
 Reads Supabase cookies
@@ -133,7 +132,6 @@ The server now passes the user down to the client:
 <AuthProvider initialUser={user}>
   {children}
 </AuthProvider>
-
 
 This solves hydration issues and ensures UI instantly knows logged-in status.
 
@@ -161,57 +159,58 @@ All components use the hook:
 
 const { user } = useAuth();
 
-
 This gives live-updating user data without hitting Supabase repeatedly.
 
 🗂 File Structure Summary
 /app
-  layout.tsx
-  /dashboard
-    layout.tsx   ← Server-side validation
-    page.tsx
-  /login
-    page.tsx
+layout.tsx
+/dashboard
+layout.tsx ← Server-side validation
+page.tsx
+/login
+page.tsx
 
 /lib/supabase
-  client.ts       ← Browser Supabase client
-  server.ts       ← createServerSupabaseClient
+client.ts ← Browser Supabase client
+server.ts ← createServerSupabaseClient
 
 /components
-  AuthProvider.tsx  ← Client session manager
+AuthProvider.tsx ← Client session manager
 
-middleware.ts       ← Edge cookie guard
+middleware.ts ← Edge cookie guard
 
 🔐 Security Layers (Defense in Depth)
-Layer	Role	Security Strength
-1. Middleware	Blocks unauthenticated users from protected routes	⭐⭐⭐⭐
-2. Server Components	Validates user session securely	⭐⭐⭐⭐⭐
-3. Client Provider	UI-only reactive session changes	⭐⭐
+Layer Role Security Strength
+
+1. Middleware Blocks unauthenticated users from protected routes ⭐⭐⭐⭐
+2. Server Components Validates user session securely ⭐⭐⭐⭐⭐
+3. Client Provider UI-only reactive session changes ⭐⭐
 
 Only the server is trusted for real authentication logic.
 
 🌐 Full Request Flow (Text Version)
 User clicks a protected route
-         │
-         ▼
+│
+▼
 Next.js Middleware
-  - checks access cookie
-  - redirects or allows
-         │
-         ▼
-Server Component
-  - verifies session with Supabase
-  - loads secure user object
-         │
-         ▼
-<AuthProvider initialUser={user}>
-  - hydrate user
-  - sync with client session
-  - listen for state changes
-         │
-         ▼
-useAuth()
-  - used by client components
+
+- checks access cookie
+- redirects or allows
+  │
+  ▼
+  Server Component
+- verifies session with Supabase
+- loads secure user object
+  │
+  ▼
+  <AuthProvider initialUser={user}>
+- hydrate user
+- sync with client session
+- listen for state changes
+  │
+  ▼
+  useAuth()
+- used by client components
 
 🧩 Why This Architecture?
 ✔ Prevents middleware timeouts
@@ -230,3 +229,4 @@ useAuth()
 
 (AuthProvider syncs & listens for changes)
 
+( || product.image_urls?.[0])

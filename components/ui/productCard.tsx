@@ -39,7 +39,7 @@ function ProductCard({ product }: ProductCardProps) {
             transition={{ duration: 0.25 }}
           >
             <Image
-              src={product.image_urls?.[0] || "/5.webp"}
+              src={"/5.webp"}
               alt={`${product.name} - ${product.brand}`}
               fill
               style={{ objectFit: "contain" }}
