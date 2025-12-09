@@ -9,7 +9,6 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import Loading from "@/app/loading";
 import logger from "@/lib/logger";
 
 interface AuthContextType {
@@ -75,7 +74,7 @@ export function AuthProvider({
     logger.debug("AuthProvider", "User manually refreshed");
   }, [fetchSession]);
 
-  if (loading) return <Loading />;
+  if (loading) return <h2>Loading...</h2>;
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>
