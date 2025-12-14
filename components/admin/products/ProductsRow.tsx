@@ -1,7 +1,24 @@
-import type { Product } from "@/types/product";
+import { deleteAdminProduct } from "@/services/admin/product";
 import Link from "next/link";
+import { Product } from "@/types/product";
 
-export default function ProductsRow({ product }: { product: Product }) {
+export default function ProductsRow({
+  product,
+  onDeleted,
+}: {
+  product: Product;
+  onDeleted: () => void;
+}) {
+  const handleDelete = async () => {
+    if (!confirm(`Delete product "${product.name}"?`)) return;
+    try {
+      await deleteAdminProduct(product.id);
+      onDeleted(); // refresh table
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Delete failed");
+    }
+  };
+
   return (
     <tr className="border-t hover:bg-muted/50">
       <td className="p-3 font-medium">{product.name}</td>
@@ -17,6 +34,12 @@ export default function ProductsRow({ product }: { product: Product }) {
         >
           Edit
         </Link>
+        <button
+          onClick={handleDelete}
+          className="text-destructive hover:underline"
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );

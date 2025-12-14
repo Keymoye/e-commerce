@@ -1,5 +1,3 @@
-"use client";
-
 import type { Product } from "@/types/product";
 import ProductsRow from "./ProductsRow";
 import Pagination from "./Pagination";
@@ -8,12 +6,14 @@ interface Props {
   products: Product[];
   currentPage: number;
   totalPages: number;
+  refresh?: () => void;
 }
 
 export default function ProductsTable({
   products,
   currentPage,
   totalPages,
+  refresh,
 }: Props) {
   return (
     <div className="space-y-4">
@@ -26,15 +26,19 @@ export default function ProductsTable({
           <thead className="bg-muted">
             <tr>
               <th className="p-3 text-left">Name</th>
-              <th className="p-3">Category</th>
-              <th className="p-3">Price</th>
-              <th className="p-3">Stock</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3 text-center">Category</th>
+              <th className="p-3 text-center">Price</th>
+              <th className="p-3 text-center">Stock</th>
+              <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {products.map((product) => (
-              <ProductsRow key={product.id} product={product} />
+              <ProductsRow
+                key={product.id}
+                product={product}
+                onDeleted={refresh ?? (() => {})}
+              />
             ))}
           </tbody>
         </table>

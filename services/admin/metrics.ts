@@ -1,16 +1,13 @@
-// services/admin/metrics.ts
-import { adminSupabase } from "@/lib/supabase/admin";
+import { createAdminSupabase } from "@/lib/supabase/admin";
 
 export async function getDashboardMetrics() {
+  const supabase = createAdminSupabase();
+
   const [{ count: products }, { count: users }, { count: orders }] =
     await Promise.all([
-      adminSupabase
-        .from("products")
-        .select("*", { count: "exact", head: true }),
-      adminSupabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true }),
-      adminSupabase.from("orders").select("*", { count: "exact", head: true }),
+      supabase.from("products").select("*", { count: "exact", head: true }),
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase.from("orders").select("*", { count: "exact", head: true }),
     ]);
 
   return {

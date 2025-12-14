@@ -1,4 +1,4 @@
-import { getAdminProducts } from "@/services/products";
+import { getAdminProducts } from "@/services/admin/product";
 import ProductsTable from "@/components/admin/products/ProductsTable";
 
 interface Props {
@@ -19,6 +19,7 @@ export default async function AdminProductsPage({ searchParams }: Props) {
         products={products}
         currentPage={page}
         totalPages={totalPages}
+        refresh={() => location.reload()} // simple page reload to refresh table
       />
     </section>
   );
