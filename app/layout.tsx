@@ -5,6 +5,7 @@ import Footer from "@/components/layout/footer";
 import AppProviders from "@/components/layout/AppProviders";
 import { getUser } from "@/lib/supabase/getUser";
 import type { User } from "@supabase/supabase-js";
+import { Analytics } from "@vercel/analytics/react";
 
 export const dynamic = "force-dynamic"; // <-- IMPORTANT
 export const fetchCache = "force-no-store"; // <-- IMPORTANT (for cookies + auth)
@@ -29,6 +30,8 @@ export default async function RootLayout({
           <NavBar />
           <main className="grow container mx-auto px-4 py-6">{children}</main>
           <Footer />
+          {/* Vercel Analytics*/}
+          <Analytics />
         </AppProviders>
       </body>
     </html>
