@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
@@ -25,48 +26,37 @@ const AuthContext = createContext<AuthContextType>({
 
 export function AuthProvider({
   children,
-  initialUser = null,
+  initialUser,
 }: {
   children: React.ReactNode;
-  initialUser?: User | null;
+  initialUser: User | null;
 }) {
   const [user, setUser] = useState<User | null>(initialUser);
-  const [loading, setLoading] = useState(!initialUser);
+  const [loading, setLoading] = useState(false);
 
-  // Only update user if auth state actually changes
+  const initialUserRef = useRef(initialUser);
+
+  // Mount auth listener ONCE
   useEffect(() => {
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (session?.user?.id !== user?.id) {
-          setUser(session?.user ?? null);
-          logger.info("AuthProvider", "Auth state changed", {
-            userId: session?.user?.id,
-          });
-        }
-      }
-    );
-
-    // Done loading immediately if initialUser exists
-    if (initialUser) setLoading(false);
-
-    return () => subscription.subscription.unsubscribe();
-  }, [initialUser, user]);
-
-  const refreshUser = useCallback(async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session?.user?.id !== user?.id) setUser(session?.user ?? null);
-      logger.debug("AuthProvider", "User manually refreshed");
-    } catch (err) {
-      logger.error("AuthProvider", "Failed to refresh user", {
-        error: String(err),
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      logger.info("AuthProvider", "Auth event", {
+        event,
+        userId: session?.user?.id,
       });
-    }
-  }, [user]);
 
-  if (loading) return <h2>Loading...</h2>;
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Optional manual refresh
+  const refreshUser = useCallback(async () => {
+    const { data } = await supabase.auth.getSession();
+    setUser(data.session?.user ?? null);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading, refreshUser }}>
