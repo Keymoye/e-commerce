@@ -7,7 +7,6 @@ import ProductSkeleton from "@/components/ui/productSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import { usePaginatedProducts } from "@/hooks/useProducts";
-import { motion } from "framer-motion";
 
 const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
   loading: () => <div />,
@@ -19,7 +18,7 @@ type ProductsHubProps =
 
 export default function ProductsHub(props: ProductsHubProps) {
   return props.mode === "featured" ? (
-    <FeaturedProducts limit={props.limit ?? 8} />
+    <FeaturedProducts limit={props.limit ?? 12} />
   ) : (
     <FullProducts
       initialPage={props.initialPage ?? 1}

@@ -33,7 +33,7 @@ export async function getPaginatedProducts(
     .range(from, to);
 
   // Category filter
-  if (category && category !== "all") {
+  if (category && category !== undefined) {
     query = query.eq("category", category);
   }
 
@@ -99,4 +99,29 @@ export async function getCategoriesStats(): Promise<CategoryStats[]> {
     count: stats.count,
     avgPrice: stats.avgPrice,
   }));
+}
+export async function getAdminProducts(
+  page: number,
+  pageSize: number
+): Promise<{
+  products: Product[];
+  total: number;
+  totalPages: number;
+}> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  const { data, count, error } = await supabase
+    .from("products")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (error) throw error;
+
+  return {
+    products: data as Product[],
+    total: count ?? 0,
+    totalPages: count ? Math.ceil(count / pageSize) : 1,
+  };
 }
