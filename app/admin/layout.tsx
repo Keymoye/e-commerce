@@ -1,14 +1,19 @@
 import { ReactNode } from "react";
-import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { isAdmin } from "@/lib/auth/isAdmin";
 import Sidebar from "@/components/admin/layout/Sidebar";
 import TopBar from "@/components/admin/layout/TopBar";
+import { redirect } from "next/dist/client/components/navigation";
 
 export default async function AdminLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  await requireAdmin();
+  const admin = await isAdmin();
+
+  if (!admin) {
+    redirect("/");
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
