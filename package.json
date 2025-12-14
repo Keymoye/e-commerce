@@ -17,6 +17,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.74.0",
+    "@vercel/analytics": "^1.6.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.22",
     "immer": "^10.1.3",

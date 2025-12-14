@@ -33,46 +33,38 @@ export function AuthProvider({
   const [user, setUser] = useState<User | null>(initialUser);
   const [loading, setLoading] = useState(!initialUser);
 
-  // Centralized session fetch
-  const fetchSession = useCallback(async () => {
+  // Only update user if auth state actually changes
+  useEffect(() => {
+    const { data: subscription } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user?.id !== user?.id) {
+          setUser(session?.user ?? null);
+          logger.info("AuthProvider", "Auth state changed", {
+            userId: session?.user?.id,
+          });
+        }
+      }
+    );
+
+    // Done loading immediately if initialUser exists
+    if (initialUser) setLoading(false);
+
+    return () => subscription.subscription.unsubscribe();
+  }, [initialUser, user]);
+
+  const refreshUser = useCallback(async () => {
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      logger.info("AuthProvider", "Session synced", {
-        userId: session?.user?.id,
-      });
+      if (session?.user?.id !== user?.id) setUser(session?.user ?? null);
+      logger.debug("AuthProvider", "User manually refreshed");
     } catch (err) {
-      logger.error("AuthProvider", "Failed to sync session", {
+      logger.error("AuthProvider", "Failed to refresh user", {
         error: String(err),
       });
-    } finally {
-      setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchSession();
-
-    const { data: subscription } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user ?? null);
-        logger.info("AuthProvider", "Auth state changed", {
-          userId: session?.user?.id,
-        });
-      }
-    );
-
-    return () => {
-      subscription.subscription.unsubscribe();
-    };
-  }, [fetchSession]);
-
-  const refreshUser = useCallback(async () => {
-    await fetchSession();
-    logger.debug("AuthProvider", "User manually refreshed");
-  }, [fetchSession]);
+  }, [user]);
 
   if (loading) return <h2>Loading...</h2>;
 
