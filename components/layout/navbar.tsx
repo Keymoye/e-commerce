@@ -15,6 +15,7 @@ export default function NavBar() {
   const navLinks = [
     { href: "/categories", label: "Categories" },
     { href: "/wishlist", label: "Wishlist" },
+    { href: "/admin", label: "admin" },
   ];
 
   return (

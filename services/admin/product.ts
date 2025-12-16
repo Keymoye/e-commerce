@@ -1,3 +1,5 @@
+"use server"
+
 // services/admin/products.ts
 import { createAdminSupabase } from "@/lib/supabase/admin";
 import type { Product } from "@/types/product";
@@ -29,6 +31,7 @@ export async function getAdminProducts(
   };
 }
 export async function getAdminProductById(id: string): Promise<Product | null> {
+
   const supabase = createAdminSupabase();
 
   const { data, error } = await supabase
@@ -49,6 +52,9 @@ export const productSchema = z.object({
 });
 
 export async function updateAdminProduct(data: z.infer<typeof productSchema>) {
+  if (!(await isAdmin())) {
+    throw new Error("Unauthorized");
+  }
   const parsed = productSchema.parse(data);
   const supabase = createAdminSupabase();
 
@@ -75,6 +81,9 @@ export const createProductSchema = z.object({
 });
  
 export async function createAdminProduct(data: z.infer<typeof createProductSchema>) {
+  if (!(await isAdmin())) {
+    throw new Error("Unauthorized");
+  }
   const parsed = createProductSchema.parse(data);
   const supabase = createAdminSupabase();
   const { data: product, error } = await supabase
@@ -89,6 +98,9 @@ export async function createAdminProduct(data: z.infer<typeof createProductSchem
 }
 
 export async function deleteAdminProduct(productId: string) {
+    if (!(await isAdmin())) {
+    throw new Error("Unauthorized");
+  }
   const supabase = createAdminSupabase();
   const { error } = await supabase
     .from("products")
