@@ -1,23 +1,13 @@
-"use server";
-
 // services/admin/products.ts
+"use server";
 import { createAdminSupabase } from "@/lib/supabase/admin";
-import type { Product } from "@/types/product";
-import { isAdmin } from "@/lib/auth/isAdmin";
-import { productSchema, createProductSchema } from "./product.schemas";
-import { z } from "zod";
 
-export async function getAdminProducts(
-  page: number,
-  pageSize: number
-): Promise<{ products: Product[]; totalPages: number }> {
-  if (!(await isAdmin())) {
-    throw new Error("Unauthorized");
-  }
+export async function getAdminProducts(page: number, pageSize: number) {
+  const supabase = createAdminSupabase();
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
-  const supabase = createAdminSupabase();
+
   const { data, count, error } = await supabase
     .from("products")
     .select("*", { count: "exact" })
@@ -30,72 +20,4 @@ export async function getAdminProducts(
     products: data ?? [],
     totalPages: Math.max(1, Math.ceil((count ?? 0) / pageSize)),
   };
-}
-export async function getAdminProductById(id: string): Promise<Product | null> {
-  const supabase = createAdminSupabase();
-
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) return null;
-  return data;
-}
-
-export async function updateAdminProduct(data: z.infer<typeof productSchema>) {
-  if (!(await isAdmin())) {
-    throw new Error("Unauthorized");
-  }
-  const parsed = productSchema.parse(data);
-  const supabase = createAdminSupabase();
-
-  const { error } = await supabase
-    .from("products")
-    .update({
-      name: parsed.name,
-      price: parsed.price,
-      stock: parsed.stock,
-      category: parsed.category,
-    })
-    .eq("id", parsed.id);
-
-  if (error) throw error;
-
-  return true;
-}
-
-export async function createAdminProduct(
-  data: z.infer<typeof createProductSchema>
-) {
-  if (!(await isAdmin())) {
-    throw new Error("Unauthorized");
-  }
-  const parsed = createProductSchema.parse(data);
-  const supabase = createAdminSupabase();
-  const { data: product, error } = await supabase
-    .from("products")
-    .insert([parsed])
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  return product;
-}
-
-export async function deleteAdminProduct(productId: string) {
-  if (!(await isAdmin())) {
-    throw new Error("Unauthorized");
-  }
-  const supabase = createAdminSupabase();
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId);
-
-  if (error) throw error;
-
-  return true;
 }
