@@ -9,7 +9,7 @@ export function middleware(req: NextRequest) {
   const isProtected = protectedRoutes.some((p) => pathname.startsWith(p));
 
   // Read Supabase session cookie
-  const session = req.cookies.get("sb-access-token")?.value;
+  const session = req.cookies.get("sb-xzrndiwdurqmzouprfmk-auth-token")?.value;
 
   const requestId =
     req.headers.get("x-request-id") ??
