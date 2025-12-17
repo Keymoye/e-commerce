@@ -11,13 +11,9 @@ export function useCart(product?: Product, id?: string) {
 
   /** ---- GLOBAL STORE SELECTORS (memoized automatically by Zustand) ---- */
   const items = CartStore((s) => s.items);
-  const total = CartStore((s) => s.total);
-  const itemCount = CartStore((s) => s.itemCount);
-
   const addItem = CartStore((s) => s.addItem);
   const updateQuantity = CartStore((s) => s.updateQuantity);
   const removeItem = CartStore((s) => s.removeItem);
-  const clear = CartStore((s) => s.clear);
 
   // Find cart item either by product or by id
   const cartItem = useMemo(() => {
@@ -90,9 +86,6 @@ export function useCart(product?: Product, id?: string) {
   return {
     // GLOBAL CART STATE
     items,
-    total,
-    itemCount,
-    clear,
 
     // PRODUCT-SPECIFIC STATE
     cartItem,

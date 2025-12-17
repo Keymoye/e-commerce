@@ -5,9 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
+import { CartStore } from "@/store/cartStore";
 
 export default function CartPage() {
-  const { items, total, clear } = useCart();
+  const items = CartStore((s) => s.items);
+  const total = CartStore((s) => s.total);
+  const clear = CartStore((s) => s.clear);
   const router = useRouter();
   const { toast } = useToast();
 
