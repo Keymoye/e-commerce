@@ -5,12 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/toast";
-import { CartStore } from "@/store/cartStore";
 
 export default function CartPage() {
-  const items = CartStore((s) => s.items);
-  const total = CartStore((s) => s.total);
-  const clear = CartStore((s) => s.clear);
+  const {
+    items,
+    total,
+    handleIncrease,
+    handleDecrease,
+    handleRemove,
+    handleClear,
+  } = useCart();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -56,7 +60,7 @@ export default function CartPage() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={clear}
+          onClick={handleClear}
           aria-label="Clear all items"
           className="text-sm text-background rounded-lg bg-secondary hover:bg-accent transition-colors py-2 px-4 shadow-sm"
         >
@@ -67,71 +71,65 @@ export default function CartPage() {
       {/* Cart Items */}
       <AnimatePresence>
         <ul className="space-y-4">
-          {items.map((item) => {
-            // Get per-item handlers and quantity using the item ID
-            const { quantity, handleIncrease, handleDecrease, handleRemove } =
-              useCart(undefined, item.id);
+          {items.map((item) => (
+            <motion.li
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="flex justify-between items-center bg-primary p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200"
+            >
+              <div className="flex flex-col gap-1">
+                <h3 className="font-semibold text-foreground">{item.name}</h3>
+                <p className="text-sm text-foreground/70">
+                  ${item.price.toFixed(2)}
+                </p>
+                <div className="flex items-center gap-3 mt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.2 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleDecrease(item.id)}
+                    className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
+                    aria-label="Decrease quantity"
+                  >
+                    <FaMinus className="text-xs" />
+                  </motion.button>
 
-            return (
-              <motion.li
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                transition={{ duration: 0.2 }}
-                className="flex justify-between items-center bg-primary p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200"
-              >
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-semibold text-foreground">{item.name}</h3>
-                  <p className="text-sm text-foreground/70">
-                    ${item.price.toFixed(2)}
-                  </p>
-                  <div className="flex items-center gap-3 mt-2">
-                    <motion.button
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={handleDecrease}
-                      className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
-                      aria-label="Decrease quantity"
-                    >
-                      <FaMinus className="text-xs" />
-                    </motion.button>
-
-                    <span className="min-w-6 text-center font-medium">
-                      {quantity}
-                    </span>
-
-                    <motion.button
-                      whileHover={{ scale: 1.2 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={handleIncrease}
-                      className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
-                      aria-label="Increase quantity"
-                    >
-                      <FaPlus className="text-xs" />
-                    </motion.button>
-                  </div>
-                </div>
-
-                <div className="text-right flex flex-col items-end">
-                  <motion.p layout className="font-semibold text-foreground">
-                    ${(item.price * quantity).toFixed(2)}
-                  </motion.p>
+                  <span className="min-w-6 text-center font-medium">
+                    {item.quantity}
+                  </span>
 
                   <motion.button
-                    whileHover={{ scale: 1.1, color: "#ef4444" }}
+                    whileHover={{ scale: 1.2 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={handleRemove}
-                    className="text-xs mt-2 transition-colors"
-                    aria-label="Remove item"
+                    onClick={() => handleIncrease(item.id)}
+                    className="p-1.5 bg-secondary rounded-full hover:bg-accent transition-colors"
+                    aria-label="Increase quantity"
                   >
-                    <FaTrash />
+                    <FaPlus className="text-xs" />
                   </motion.button>
                 </div>
-              </motion.li>
-            );
-          })}
+              </div>
+
+              <div className="text-right flex flex-col items-end">
+                <motion.p layout className="font-semibold text-foreground">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </motion.p>
+
+                <motion.button
+                  whileHover={{ scale: 1.1, color: "#ef4444" }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleRemove(item.id)}
+                  className="text-xs mt-2 transition-colors"
+                  aria-label="Remove item"
+                >
+                  <FaTrash />
+                </motion.button>
+              </div>
+            </motion.li>
+          ))}
         </ul>
       </AnimatePresence>
 
