@@ -75,6 +75,9 @@ function FullProducts({
 
   useEffect(() => setPage(1), [category, sortBy, debouncedSearch]);
   const showing = products?.length ?? 0;
+  useEffect(() => {
+    console.log("Category:", category);
+  }, [category]);
 
   return (
     <section aria-label="Product listing">
@@ -100,12 +103,9 @@ function FullProducts({
             className="w-full px-3 py-2 rounded-lg border border-foreground/20 bg-background focus:ring-2 focus:ring-accent outline-none"
           >
             <option value="all">All</option>
-            <option value="Pain Relief & Anti-inflammatory">Pain Relief</option>
-            <option value="Supplements">Supplements</option>
-            <option value="Beauty & Skincare">Beauty</option>
-            <option value="Vitamins">Vitamins</option>
-            <option value="Cold & Flu">Cold & Flu</option>
-            <option value="Digestive Health">Digestive Health</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Cosmetics">Cosmetics</option>
+            <option value="Electronics">Electronics</option>
           </select>
         </div>
         <div>
