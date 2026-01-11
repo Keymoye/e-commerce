@@ -93,7 +93,8 @@ function ProductCard({ product }: ProductCardProps) {
           {product.tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-1 text-xs bg-secondary/20 text-accent rounded-full truncate"
+              className="inline-flex items-center h-5 sm:h-6 px-2 text-[10px] sm:text-[11px]
+              leading-none bg-secondary/20 text-accent rounded-full truncate"
             >
               #{tag}
             </span>
