@@ -6,19 +6,22 @@ import { useCart } from "@/hooks/cart/useCart";
 import { Product } from "@/types/product";
 
 interface CartButtonProps {
-  product?: Product;
+  product: Product;
 }
 
 export default function CartButton({ product }: CartButtonProps) {
-  const { quantity, handleIncrease, handleDecrease, handleAdd } =
-    useCart(product);
+  const { items, handleAdd, handleIncrease, handleDecrease } = useCart();
+
+  // Find current quantity for this product
+  const cartItem = items.find((i) => i.id === product.id);
+  const quantity = cartItem?.quantity ?? 0;
   return (
     <div className="flex justify-center">
       <AnimatePresence mode="wait" initial={false}>
         {quantity === 0 ? (
           <motion.button
             key="add"
-            onClick={() => handleAdd(1)}
+            onClick={() => handleAdd(product, 1)}
             aria-label={`Add ${product?.name} to cart`}
             className="flex items-center justify-center gap-2 w-full bg-secondary text-background py-2 rounded-lg font-medium shadow-sm hover:shadow-md hover:bg-accent transition-all duration-200"
             initial={{ opacity: 0, scale: 0.9 }}
@@ -42,7 +45,7 @@ export default function CartButton({ product }: CartButtonProps) {
             <motion.button
               whileHover={{ scale: 1.2, rotate: -5 }}
               whileTap={{ scale: 0.9 }}
-              onClick={handleDecrease}
+              onClick={() => handleDecrease(product.id)}
               aria-label="Decrease quantity"
               className="p-1.5 rounded-full bg-background/10 hover:bg-background/20 transition-colors"
             >
@@ -63,7 +66,7 @@ export default function CartButton({ product }: CartButtonProps) {
             <motion.button
               whileHover={{ scale: 1.2, rotate: 5 }}
               whileTap={{ scale: 0.9 }}
-              onClick={handleIncrease}
+              onClick={() => handleIncrease(product.id)}
               aria-label="Increase quantity"
               className="p-1.5 rounded-full bg-background/10 hover:bg-background/20 transition-colors"
             >
