@@ -1,4 +1,3 @@
-import { deleteAdminProduct } from "@/services/admin/product";
 import Link from "next/link";
 import { Product } from "@/types/product";
 
@@ -12,7 +11,13 @@ export default function ProductsRow({
   const handleDelete = async () => {
     if (!confirm(`Delete product "${product.name}"?`)) return;
     try {
-      await deleteAdminProduct(product.id);
+      const res = await fetch(`/api/admin/products/${product.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error || "Delete failed");
+      }
       onDeleted(); // refresh table
     } catch (err) {
       alert(err instanceof Error ? err.message : "Delete failed");

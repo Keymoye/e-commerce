@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" }); // <-- FORCE LOAD THIS FILE
 
 import { createClient } from "@supabase/supabase-js";
+import logger from "../lib/logger";
 
 // 1️⃣ Setup Supabase client
 const supabase = createClient(
@@ -56,9 +57,18 @@ function generateMockProducts(count: number) {
 async function seed() {
   const mockProducts = generateMockProducts(50); // Generate 50 products
   const { error } = await supabase.from("products").insert(mockProducts);
-  if (error) throw error;
-  console.log("✅ Seeded", mockProducts.length, "products into Supabase!");
+  if (error) {
+    logger.error("Seed", "Failed to insert products", error);
+    throw error;
+  }
+  logger.info(
+    "Seed",
+    `✅ Seeded ${mockProducts.length} products into Supabase!`
+  );
 }
 
 // Run
-seed().catch((err) => console.error(err));
+seed().catch((err) => {
+  logger.error("Seed", "Seed job failed", err);
+  process.exit(1);
+});

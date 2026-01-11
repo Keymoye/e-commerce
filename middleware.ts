@@ -16,10 +16,11 @@ export function middleware(req: NextRequest) {
     crypto.randomUUID() ??
     Date.now().toString();
 
+  const log = logger.withContext({ requestId });
+
   if (isProtected && !session) {
-    logger.warn("Middleware", `Blocked access to protected route`, {
+    log.warn("Middleware", "Blocked access to protected route", {
       path: pathname,
-      requestId,
     });
 
     const url = req.nextUrl.clone();
@@ -31,9 +32,8 @@ export function middleware(req: NextRequest) {
   const res = NextResponse.next();
   res.headers.set("x-request-id", requestId);
 
-  logger.debug("Middleware", "Request allowed", {
+  log.debug("Middleware", "Request allowed", {
     path: pathname,
-    requestId,
   });
 
   return res;

@@ -217,6 +217,8 @@ const supabase = createClient(
 async function seed() {
   const { error } = await supabase.from("products").insert(mockProducts);
   if (error) throw error;
+  // Seed script logs to the project's structured logger
+  // (when run via `pnpm tsx scripts/seed-products.ts`)
   console.log("✅ Seeded", mockProducts.length, "products");
 }
 

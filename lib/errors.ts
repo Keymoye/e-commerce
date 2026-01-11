@@ -1,9 +1,33 @@
+export interface ErrorDetails {
+  [key: string]: unknown;
+}
+
 export class AppError extends Error {
   status: number;
-  constructor(message: string, status = 500) {
+  code?: string;
+  isOperational: boolean;
+  details?: ErrorDetails;
+
+  constructor(
+    message: string,
+    status = 500,
+    opts?: { code?: string; details?: ErrorDetails; isOperational?: boolean }
+  ) {
     super(message);
     this.name = "AppError";
     this.status = status;
+    this.code = opts?.code;
+    this.details = opts?.details;
+    this.isOperational = opts?.isOperational ?? true;
+  }
+
+  toJSON() {
+    return {
+      message: this.message,
+      status: this.status,
+      code: this.code,
+      details: this.details,
+    } as const;
   }
 }
 

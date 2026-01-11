@@ -230,3 +230,9 @@ Next.js Middleware
 (AuthProvider syncs & listens for changes)
 
 ( || product.image_urls?.[0])
+
+---
+
+## Logging & Error Handling (📌)
+
+This project includes a centralized logging and error handling proposal: see `docs/LOGGING_AND_ERRORS.md` for the design, recommended practices, and examples (API wrapper `lib/apiHandler.ts`, `AppError` in `lib/errors.ts`). Follow those guidelines to keep logs structured, avoid PII leakage, and enable optional external integration (Sentry, Datadog) in production.

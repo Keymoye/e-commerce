@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { updateAdminProduct } from "@/services/admin/product";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
 import { productSchema } from "@/services/admin/product.schemas";
@@ -26,7 +25,15 @@ export default function EditProductForm({ initialData }: Props) {
     setLoading(true);
 
     try {
-      await updateAdminProduct(form);
+      const res = await fetch(`/api/admin/products/${form.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error || "Update failed");
+      }
       toast({
         title: "Success",
         description: "Product updated successfully",

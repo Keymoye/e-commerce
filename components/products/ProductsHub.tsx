@@ -81,7 +81,10 @@ function FullProducts({
   useEffect(() => setPage(1), [category, sortBy, debouncedSearch]);
   const showing = products?.length ?? 0;
   useEffect(() => {
-    console.log("Category:", category);
+    // Log category changes for debugging & analytics
+    import("@/lib/logger").then(({ default: log }) =>
+      log.debug({ category }, "ProductsHub", "Category changed")
+    );
   }, [category]);
 
   useEffect(() => {

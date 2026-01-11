@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { useToast } from "@/components/ui/toast";
-import { updateAdminProduct } from "@/services/admin/product";
 
 interface Props {
   product: Product;
@@ -24,7 +23,16 @@ export default function ProductForm({ product }: Props) {
     setLoading(true);
 
     try {
-      await updateAdminProduct({ ...form, id: product.id });
+      const res = await fetch(`/api/admin/products/${product.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error || "Update failed");
+      }
+
       toast({
         title: "Product updated ✅",
         description: "Your changes have been saved.",

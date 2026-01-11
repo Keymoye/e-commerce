@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
+import logger from "@/lib/logger";
 
 export function useOAuthLogin() {
   const { toast } = useToast();
@@ -21,6 +22,7 @@ export function useOAuthLogin() {
 
       if (error) throw error;
     } catch (err) {
+      logger.error("OAuthLogin", "OAuth sign-in failed", err);
       toast({
         title: "OAuth login failed ⚠️",
         description:

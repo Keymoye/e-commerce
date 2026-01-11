@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
-import { createAdminProduct } from "@/services/admin/product";
 
 export default function CreateProductForm({
   onSuccess,
@@ -23,7 +22,15 @@ export default function CreateProductForm({
     setLoading(true);
 
     try {
-      await createAdminProduct(form);
+      const res = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err?.error || "Create failed");
+      }
       toast({
         title: "Product created ✅",
         description: "The product has been added.",

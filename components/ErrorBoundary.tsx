@@ -19,7 +19,15 @@ export default class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     logger.error("Unhandled UI error:", error, info);
-    // place to integrate Sentry or other error provider
+    // Send to the configured client error reporting provider (Sentry, etc.)
+    try {
+      // Dynamic import keeps bundle small when not configured
+      import("@/lib/errorReporter").then(({ reportClientError }) =>
+        reportClientError(error, { componentStack: info.componentStack })
+      );
+    } catch (e) {
+      // swallow reporting errors
+    }
   }
 
   render() {

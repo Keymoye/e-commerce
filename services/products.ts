@@ -1,6 +1,8 @@
 // services/products.ts
 import { supabase } from "@/lib/supabase/client";
 import type { Product, CategoryStats } from "@/types/product";
+import logger from "@/lib/logger";
+import AppError from "@/lib/errors";
 
 export async function getProductById(id: string): Promise<Product | null> {
   const { data, error } = await supabase
@@ -9,7 +11,14 @@ export async function getProductById(id: string): Promise<Product | null> {
     .eq("id", id)
     .single();
 
-  if (error) throw error;
+  if (error) {
+    logger.error({ id }, "Products", "getProductById DB error", {
+      reason: error.message,
+    });
+    throw new AppError(error.message ?? "Failed to fetch product", 500, {
+      code: "DB_ERROR",
+    });
+  }
   return data as Product;
 }
 
@@ -55,7 +64,18 @@ export async function getPaginatedProducts(
   const { data, error, count } = await query;
 
   if (error) {
-    console.error("Error in getPaginatedProducts:", error.message);
+    const log = logger.withContext({
+      page,
+      pageSize,
+      category,
+      search,
+      sortBy,
+    });
+    log.error(
+      { page, pageSize, category, search, sortBy },
+      "getPaginatedProducts failed",
+      { reason: error.message }
+    );
     return {
       products: [],
       totalPages: 1,
@@ -80,7 +100,14 @@ export async function getCategoriesStats(): Promise<CategoryStats[]> {
     .from("products")
     .select("category, price", { count: "exact" });
 
-  if (error) throw error;
+  if (error) {
+    logger.error("Products", "Failed to fetch categories stats", {
+      reason: error.message,
+    });
+    throw new AppError(error.message ?? "Failed to fetch category stats", 500, {
+      code: "DB_ERROR",
+    });
+  }
 
   // Aggregate counts and avg price
   const categoryMap = new Map<string, { count: number; avgPrice: number }>();
@@ -117,7 +144,14 @@ export async function getAdminProducts(
     .order("created_at", { ascending: false })
     .range(from, to);
 
-  if (error) throw error;
+  if (error) {
+    logger.error("AdminProducts", "Failed to fetch admin products", {
+      reason: error.message,
+    });
+    throw new AppError(error.message ?? "Failed to fetch admin products", 500, {
+      code: "DB_ERROR",
+    });
+  }
 
   return {
     products: data as Product[],

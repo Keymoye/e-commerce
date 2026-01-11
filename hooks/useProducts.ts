@@ -7,6 +7,8 @@ import {
   getProductById,
   getCategoriesStats,
 } from "@/services/products";
+import logger from "@/lib/logger";
+import { isAppError } from "@/lib/errors";
 
 interface UseProductsOptions {
   page: number;
@@ -51,8 +53,12 @@ export function usePaginatedProducts({
         setTotal(res.total ?? 0);
       } catch (err: any) {
         if (cancelled) return;
-        console.error("usePaginatedProducts error:", err);
-        setError(err.message || String(err));
+        logger.error(
+          { page, pageSize, category, search, sortBy },
+          "usePaginatedProducts error",
+          err
+        );
+        setError(isAppError(err) ? err.message : "Failed to load products");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -85,8 +91,8 @@ export function useProductById(id: string) {
         setProduct(res);
       } catch (err: any) {
         if (cancelled) return;
-        console.error("useProductById error:", err);
-        setError(err.message || String(err));
+        logger.error({ id }, "useProductById error", err);
+        setError(isAppError(err) ? err.message : "Failed to load product");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -117,8 +123,8 @@ export function useCategories() {
         setCategories(cats);
       } catch (err: any) {
         if (cancelled) return;
-        console.error("useCategories error:", err);
-        setError(err.message || String(err));
+        logger.error("useCategories error", err);
+        setError(isAppError(err) ? err.message : "Failed to load categories");
       } finally {
         if (!cancelled) setLoading(false);
       }
