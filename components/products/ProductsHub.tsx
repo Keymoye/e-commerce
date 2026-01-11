@@ -6,7 +6,9 @@ import dynamic from "next/dynamic";
 import ProductSkeleton from "@/components/ui/productSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useRouter } from "next/navigation";
 import { usePaginatedProducts } from "@/hooks/useProducts";
+import { useSearchParams } from "next/navigation";
 
 const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
   loading: () => <div />,
@@ -58,12 +60,15 @@ function FullProducts({
   pageSize: number;
 }) {
   const [page, setPage] = useState(initialPage);
-  const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState<
     "price-asc" | "price-desc" | "rating" | "newest"
   >("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 400);
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
+
+  const [category, setCategory] = useState(categoryFromUrl ?? "all");
 
   const { products, totalPages, loading, error } = usePaginatedProducts({
     page,
@@ -78,6 +83,24 @@ function FullProducts({
   useEffect(() => {
     console.log("Category:", category);
   }, [category]);
+
+  useEffect(() => {
+    if (categoryFromUrl && categoryFromUrl !== category) {
+      setCategory(categoryFromUrl);
+    }
+  }, [categoryFromUrl, category]);
+
+  const router = useRouter();
+
+  const onCategoryChange = (value: string) => {
+    setCategory(value);
+
+    router.push(
+      value === "all"
+        ? "/products"
+        : `/products?category=${encodeURIComponent(value)}`
+    );
+  };
 
   return (
     <section aria-label="Product listing">
@@ -99,7 +122,7 @@ function FullProducts({
           <select
             aria-label="Filter by category"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => onCategoryChange(e.target.value)}
             className="w-full px-3 py-2 rounded-lg border border-foreground/20 bg-background focus:ring-2 focus:ring-accent outline-none"
           >
             <option value="all">All</option>
