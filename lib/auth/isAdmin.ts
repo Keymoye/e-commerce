@@ -1,14 +1,15 @@
 // lib/auth/isAdmin.ts
 import { getUser } from "../supabase/getUser";
 import { createAdminSupabase } from "../supabase/admin";
+import { logger } from '@/logger';
 
 export async function isAdmin(): Promise<boolean> {
   const user = await getUser();
 
-  console.log("[isAdmin] user:", user?.id);
+  logger.debug({ message: "[isAdmin] user", userId: user?.id });
 
   if (!user) {
-    console.log("[isAdmin] no user");
+    logger.debug({ message: "[isAdmin] no user" });
     return false;
   }
 
@@ -20,7 +21,7 @@ export async function isAdmin(): Promise<boolean> {
     .eq("id", user.id)
     .single();
 
-  console.log("[isAdmin] profile:", data, "error:", error);
+  logger.debug({ message: "[isAdmin] profile", data, error });
 
   return data?.role === "admin";
 }

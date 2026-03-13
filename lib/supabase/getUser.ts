@@ -1,5 +1,6 @@
 import type { User } from "@supabase/supabase-js";
 import { createServerClient } from "@/lib/supabase/server";
+import { logger } from '@/logger';
 
 export async function getUser(): Promise<User | null> {
   try {
@@ -12,7 +13,7 @@ export async function getUser(): Promise<User | null> {
     if (error) throw error;
     return user;
   } catch (err) {
-    console.error("Failed to get user:", err);
+    logger.error({ message: "Failed to get user", error: err });
     return null;
   }
 }

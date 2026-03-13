@@ -19,7 +19,9 @@ export type MetricValue = {
 export function sendToAnalytics(metric: MetricValue) {
   // Log to console in development
   if (process.env.NODE_ENV === "development") {
-    console.log(`📊 ${metric.name}:`, {
+    logger.debug({ 
+      message: '📊 Web Vital', 
+      name: metric.name,
       value: `${metric.value.toFixed(0)}ms`,
       rating: metric.rating,
       delta: `${metric.delta.toFixed(0)}ms`,
