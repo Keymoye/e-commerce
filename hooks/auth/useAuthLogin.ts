@@ -1,36 +1,17 @@
-"use client";
-
-import { useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { useToast } from "@/components/ui/toast";
+'use client';
+import { useUIStore } from '@/store/uiStore';
+import { supabase } from '@/lib/supabase/client';
 
 export function useOAuthLogin() {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const showToast = useUIStore((s) => s.showToast);
 
-  const handleOAuthLogin = async (provider: "google" | "github") => {
-    try {
-      setLoading(true);
-
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
-    } catch (err) {
-      toast({
-        title: "OAuth login failed ⚠️",
-        description:
-          err instanceof Error ? err.message : "Something went wrong",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleOAuthLogin = async (provider: 'google' | 'github') => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) showToast({ type: 'error', message: error.message });
   };
 
-  return { handleOAuthLogin, loading };
+  return { handleOAuthLogin, loading: false };
 }

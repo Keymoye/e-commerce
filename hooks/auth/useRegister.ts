@@ -1,8 +1,8 @@
-"use client";
-
-import { useState } from "react";
-import { useToast } from "@/components/ui/toast";
-import fetchJson from "@/lib/api";
+'use client';
+import { useRouter } from 'next/navigation';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useUIStore } from '@/store/uiStore';
+import { isApiError } from '@/types/api.types';
 
 export interface RegisterForm {
   fullName: string;
@@ -12,38 +12,38 @@ export interface RegisterForm {
 }
 
 export function useRegister() {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { handleError } = useErrorHandler();
+  const { setLoading, isLoading, showToast } = useUIStore();
+  const LOADING_KEY = 'auth.register';
 
   const onSubmit = async (data: RegisterForm) => {
+    setLoading(LOADING_KEY, true);
     try {
-      setLoading(true);
-
-      await fetchJson("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res  = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: data.fullName,
-          email: data.email,
+          email:    data.email,
           password: data.password,
         }),
       });
+      const json = await res.json();
 
-      toast({
-        title: "Account created 🎉",
-        description: "Redirecting to login...",
-      });
-    } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "An error occurred";
-      toast({
-        title: "Signup failed 🚫",
-        description: errorMsg,
-        variant: "destructive",
-      });
+      if (isApiError(json)) {
+        handleError(json);
+        return;
+      }
+
+      showToast({ type: 'success', message: 'Account created! Please check your email.' });
+      router.push('/login');
+    } catch (err) {
+      handleError(err);
     } finally {
-      setLoading(false);
+      setLoading(LOADING_KEY, false);
     }
   };
 
-  return { onSubmit, loading };
+  return { onSubmit, loading: isLoading(LOADING_KEY) };
 }

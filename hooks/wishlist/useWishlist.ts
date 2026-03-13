@@ -3,7 +3,7 @@
 
 import { WishlistStore } from "@/store/wishlistStore";
 import { Product } from "@/types/product";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 
 export function useWishlist(product?: Product) {
   const items = WishlistStore((s) => s.items);
@@ -12,7 +12,7 @@ export function useWishlist(product?: Product) {
   const toggleWishlistStore = WishlistStore((s) => s.toggleWishlist);
   const clear = WishlistStore((s) => s.clear);
 
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
 
   const isWishlisted = product ? items.some((p) => p.id === product.id) : false;
 
@@ -21,21 +21,19 @@ export function useWishlist(product?: Product) {
 
     toggleWishlistStore(product);
 
-    toast({
-      title: isWishlisted ? "Removed 💔" : "Saved ❤️",
-      description: isWishlisted
+    showToast({
+      type: isWishlisted ? 'info' : 'success',
+      message: isWishlisted
         ? `${product.name} removed from wishlist.`
         : `${product.name} added to wishlist.`,
-      duration: 2000,
     });
   };
 
   const handleRemove = (id: string) => {
     removeItem(id);
-    toast({
-      title: "Removed 💔",
-      description: "Item removed from your wishlist.",
-      duration: 2000,
+    showToast({
+      type: 'info',
+      message: 'Item removed from your wishlist.',
     });
   };
 

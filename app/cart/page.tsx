@@ -4,7 +4,17 @@ import { useCart } from "@/hooks/cart/useCart";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTrash, FaPlus, FaMinus } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+
+function CartFallback() {
+  return (
+    <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center my-8">
+      <p className="font-medium text-red-700">Failed to load cart.</p>
+      <p className="text-sm text-red-500 mt-1">Please refresh the page to try again.</p>
+    </div>
+  );
+}
 
 export default function CartPage() {
   const {
@@ -16,22 +26,15 @@ export default function CartPage() {
     handleClear,
   } = useCart();
   const router = useRouter();
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
 
   const handleCheckout = () => {
     if (items.length === 0) {
-      toast({
-        title: "Cart is empty 🛒",
-        description: "Add items before proceeding to checkout.",
-        variant: "destructive",
-      });
+      showToast({ type: 'warning', message: 'Cart is empty 🛒 Add items before proceeding to checkout.' });
       return;
     }
 
-    toast({
-      title: "Redirecting to Checkout...",
-      description: "Please wait while we prepare your order.",
-    });
+    showToast({ type: 'info', message: 'Redirecting to Checkout... Please wait while we prepare your order.' });
 
     setTimeout(() => router.push("/checkout"), 800);
   };
@@ -48,7 +51,8 @@ export default function CartPage() {
     );
 
   return (
-    <section className="p-6 max-w-3xl mx-auto">
+    <ErrorBoundary fallback={<CartFallback />}>
+      <section className="p-6 max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <motion.h2
@@ -158,5 +162,6 @@ export default function CartPage() {
         </motion.button>
       </motion.div>
     </section>
+    </ErrorBoundary>
   );
 }

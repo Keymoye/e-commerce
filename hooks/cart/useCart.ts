@@ -3,11 +3,11 @@
 
 import { useCallback } from "react";
 import { CartStore } from "@/store/cartStore";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 import { Product } from "@/types/product";
 
 export function useCart() {
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
 
   /** ---- GLOBAL STORE SELECTORS ---- */
   const items = CartStore((s) => s.items);
@@ -24,13 +24,9 @@ export function useCart() {
       if (!product) return;
       addItem(product, qty);
 
-      toast({
-        title: "Added to cart 🛒",
-        description: `${product.name} x${qty} added to your cart.`,
-        duration: 1800,
-      });
+      showToast({ type: 'success', message: `${product.name} added to cart.` });
     },
-    [addItem, toast]
+    [addItem, showToast]
   );
 
   const handleRemove = useCallback(
@@ -40,13 +36,9 @@ export function useCart() {
 
       removeItem(id);
 
-      toast({
-        title: "Removed from cart 🗑️",
-        description: `${item.name} removed from your cart.`,
-        duration: 1800,
-      });
+      showToast({ type: 'info', message: `${item.name} removed from cart.` });
     },
-    [items, removeItem, toast]
+    [items, removeItem, showToast]
   );
 
   const handleIncrease = useCallback(
@@ -57,13 +49,9 @@ export function useCart() {
       const newQty = item.quantity + 1;
       updateQuantity(id, newQty);
 
-      toast({
-        title: "Quantity Updated",
-        description: `${item.name} → ${newQty}`,
-        duration: 1600,
-      });
+      showToast({ type: 'info', message: `${item.name} → ${newQty}` });
     },
-    [items, updateQuantity, toast]
+    [items, updateQuantity, showToast]
   );
 
   const handleDecrease = useCallback(
@@ -79,23 +67,15 @@ export function useCart() {
       const newQty = item.quantity - 1;
       updateQuantity(id, newQty);
 
-      toast({
-        title: "Quantity Updated",
-        description: `${item.name} → ${newQty}`,
-        duration: 1600,
-      });
+      showToast({ type: 'info', message: `${item.name} → ${newQty}` });
     },
-    [items, updateQuantity, handleRemove, toast]
+    [items, updateQuantity, handleRemove, showToast]
   );
 
   const handleClear = useCallback(() => {
     clear();
-    toast({
-      title: "Cart cleared 🗑️",
-      description: "All items removed from your cart.",
-      duration: 1800,
-    });
-  }, [clear, toast]);
+    showToast({ type: 'info', message: 'Cart cleared.' });
+  }, [clear, showToast]);
 
   /** ---- EXPORTED API ---- */
   return {

@@ -1,41 +1,35 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/toast";
-import logger from "@/lib/logger";
-import fetchJson from "@/lib/api";
+'use client';
+import { useRouter } from 'next/navigation';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useUIStore } from '@/store/uiStore';
+import { isApiError } from '@/types/api.types';
 
 export function useLogout() {
   const router = useRouter();
-  const { toast } = useToast();
+  const { handleError } = useErrorHandler();
+  const { setLoading, isLoading, showToast } = useUIStore();
+  const LOADING_KEY = 'auth.logout';
 
   const logout = async () => {
-    logger.info("Logging out...");
-
+    setLoading(LOADING_KEY, true);
     try {
-      await fetchJson("/api/logout", { method: "POST" });
+      const res  = await fetch('/api/logout', { method: 'POST' });
+      const json = await res.json();
 
-      toast({
-        title: "Logged out 👋",
-        description: "Redirecting to login...",
-      });
+      if (isApiError(json)) {
+        handleError(json);
+        return;
+      }
 
-      setTimeout(() => {
-        router.replace("/login");
-      }, 800);
-    } catch (err: unknown) {
-      const errorMsg =
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again.";
-      logger.error("Unexpected logout error:", errorMsg);
-      toast({
-        title: "Unexpected error ⚠️",
-        description: errorMsg,
-        variant: "destructive",
-      });
+      showToast({ type: 'success', message: 'Logged out successfully.' });
+      router.refresh();
+      router.replace('/login');
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(LOADING_KEY, false);
     }
   };
 
-  return { logout };
+  return { logout, loading: isLoading(LOADING_KEY) };
 }

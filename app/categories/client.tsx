@@ -5,12 +5,10 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function CategoriesClient() {
-  const { categories, loading, error } = useCategories();
+  const { categories, isLoading } = useCategories();
   const router = useRouter();
 
-  if (loading) return <p>Loading categories...</p>;
-  if (error)
-    return <p className="text-red-500">Failed to load categories: {error}</p>;
+  if (isLoading) return <p>Loading categories...</p>;
 
   return (
     <section className="p-6 max-w-5xl mx-auto">

@@ -1,33 +1,35 @@
 // /app/api/login/route.ts
 import { NextResponse } from "next/server";
-import { loginService } from "@/services/auth";
-import { logger } from "@/lib/logger";
-import crypto from "crypto";
+import { withErrorHandler } from "@/errors/withErrorHandler";
+import { z } from "zod";
+import { AppError } from "@/errors/AppError";
+import { auth } from "@/services/auth.service";
+import { logger } from "@/logger";
 
-export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const requestId =
-      request.headers.get("x-request-id") ??
-      crypto.randomUUID?.() ??
-      `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    logger.info({ requestId }, "login attempt", { body });
-    const result = await loginService(body);
-    const res = NextResponse.json(
-      { message: "Login successful", ...result },
-      { status: 200 }
-    );
-    res.headers.set("x-request-id", requestId);
-    return res;
-  } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "Internal server error";
-    const status = (err as { status?: number })?.status ?? 500;
-    logger.error(
-      { requestId: request.headers.get("x-request-id") ?? "-" },
-      "login error",
-      err
-    );
-    return NextResponse.json({ error: message }, { status });
+// ── Validation schema (Zod) ────────────────────────────────────────────
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+// ── POST /api/login ─────────────────────────────────────────────────
+export const POST = withErrorHandler(async (request: Request) => {
+  // 1. Validate
+  const body = await request.json();
+  const params = loginSchema.safeParse(body);
+  if (!params.success) {
+    throw AppError.validation('Invalid login credentials', {
+      issues: params.error.issues,
+    });
   }
-}
+
+  // 2. Call service
+  const result = await auth.login(params.data);
+  
+  // 3. Return consistent response
+  logger.info({ message: 'login successful', userId: result.user.id });
+  return NextResponse.json({
+    data: result,
+    meta: { timestamp: new Date().toISOString() }
+  });
+});

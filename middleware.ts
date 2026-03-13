@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import logger from "@/lib/logger";
+import { logger } from "@/logger";
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -17,10 +17,7 @@ export function middleware(req: NextRequest) {
     Date.now().toString();
 
   if (isProtected && !session) {
-    logger.warn("Middleware", `Blocked access to protected route`, {
-      path: pathname,
-      requestId,
-    });
+    logger.warn({ message: 'Blocked access to protected route', path: pathname, requestId });
 
     const url = req.nextUrl.clone();
     url.pathname = "/login";
@@ -31,10 +28,7 @@ export function middleware(req: NextRequest) {
   const res = NextResponse.next();
   res.headers.set("x-request-id", requestId);
 
-  logger.debug("Middleware", "Request allowed", {
-    path: pathname,
-    requestId,
-  });
+  logger.debug({ message: 'Request allowed', path: pathname, requestId });
 
   return res;
 }

@@ -38,7 +38,7 @@ function generateMockProducts(count: number) {
       description: faker.commerce.productDescription(),
       price: parseFloat(faker.commerce.price({ min: 10, max: 500 })),
       stock: faker.number.int({ min: 0, max: 100 }),
-      rating: faker.number.float({ min: 1, max: 5, precision: 0.1 }),
+      rating: faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
       image_urls: [generateProductImage(category)],
       tags: faker.helpers.arrayElements(
         ["sale", "new", "popular", "eco", "trending"],

@@ -1,133 +1,113 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import type { Product, CategoryStats } from "@/types/product";
-import {
-  getPaginatedProducts,
-  getProductById,
-  getCategoriesStats,
-} from "@/services/products";
+'use client';
+import { useState, useEffect, useCallback } from 'react';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useUIStore } from '@/store/uiStore';
+import { isApiError } from '@/types/api.types';
+import type { Product, CategoryStats } from '@/types/product';
 
 interface UseProductsOptions {
-  page: number;
-  pageSize: number;
+  page:      number;
+  pageSize:  number;
   category?: string;
-  search?: string;
-  sortBy?: "price-asc" | "price-desc" | "rating" | "newest";
+  search?:   string;
+  sortBy?:   'price-asc' | 'price-desc' | 'rating' | 'newest';
 }
 
-export function usePaginatedProducts({
-  page,
-  pageSize,
-  category,
-  search,
-  sortBy,
-}: UseProductsOptions) {
-  const [products, setProducts] = useState<Product[]>([]);
+export function usePaginatedProducts(opts: UseProductsOptions) {
+  const [products,   setProducts]   = useState<Product[]>([]);
   const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [total,      setTotal]      = useState(0);
+  const { handleError }             = useErrorHandler();
+  const { setLoading, isLoading }   = useUIStore();
+  const LOADING_KEY = 'products.list';
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
+  const fetchProducts = useCallback(async () => {
+    setLoading(LOADING_KEY, true);
+    try {
+      const params = new URLSearchParams();
+      params.set('page',     String(opts.page));
+      params.set('pageSize', String(opts.pageSize));
+      if (opts.category) params.set('category', opts.category);
+      if (opts.search)   params.set('q', opts.search);
+      if (opts.sortBy)   params.set('sortBy', opts.sortBy);
 
-    // Fetch products
-    (async () => {
-      try {
-        const res = await getPaginatedProducts(
-          page,
-          pageSize,
-          category,
-          search,
-          sortBy
-        );
-        if (cancelled) return;
+      const res  = await fetch(`/api/products?${params}`);
+      const json = await res.json();
 
-        setProducts(res.products ?? []);
-        setTotalPages(res.totalPages ?? 1);
-        setTotal(res.total ?? 0);
-      } catch (err: any) {
-        if (cancelled) return;
-        console.error("usePaginatedProducts error:", err);
-        setError(err.message || String(err));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+      if (isApiError(json)) { handleError(json); return; }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [page, pageSize, category, search, sortBy]);
+      setProducts(json.data ?? []);
+      setTotalPages(json.meta?.totalPages ?? 1);
+      setTotal(json.meta?.total ?? 0);
+    } catch (err) {
+      handleError(err);
+    } finally {
+      setLoading(LOADING_KEY, false);
+    }
+  }, [opts.page, opts.pageSize, opts.category, opts.search, opts.sortBy]);
 
-  return { products, totalPages, total, loading, error };
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  return { products, totalPages, total, isLoading: isLoading(LOADING_KEY), refetch: fetchProducts };
 }
 
 export function useProductById(id: string) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [product, setProduct]     = useState<Product | null>(null);
+  const { handleError }           = useErrorHandler();
+  const { setLoading, isLoading } = useUIStore();
+  const LOADING_KEY = `products.detail.${id}`;
 
   useEffect(() => {
     if (!id) return;
-
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+    setLoading(LOADING_KEY, true);
 
     (async () => {
       try {
-        const res = await getProductById(id);
+        const res  = await fetch(`/api/products/${id}`);
+        const json = await res.json();
         if (cancelled) return;
-        setProduct(res);
-      } catch (err: any) {
-        if (cancelled) return;
-        console.error("useProductById error:", err);
-        setError(err.message || String(err));
+        if (isApiError(json)) { handleError(json); return; }
+        setProduct(json.data);
+      } catch (err) {
+        if (!cancelled) handleError(err);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setLoading(LOADING_KEY, false);
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [id]);
 
-  return { product, loading, error };
+  return { product, isLoading: isLoading(LOADING_KEY) };
 }
 
 export function useCategories() {
   const [categories, setCategories] = useState<CategoryStats[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { handleError }             = useErrorHandler();
+  const { setLoading, isLoading }   = useUIStore();
+  const LOADING_KEY = 'categories.list';
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setError(null);
+    setLoading(LOADING_KEY, true);
 
     (async () => {
       try {
-        const cats = await getCategoriesStats();
+        const res  = await fetch('/api/categories');
+        const json = await res.json();
         if (cancelled) return;
-        setCategories(cats);
-      } catch (err: any) {
-        if (cancelled) return;
-        console.error("useCategories error:", err);
-        setError(err.message || String(err));
+        if (isApiError(json)) { handleError(json); return; }
+        setCategories(json.data ?? []);
+      } catch (err) {
+        if (!cancelled) handleError(err);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setLoading(LOADING_KEY, false);
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  return { categories, loading, error };
+  return { categories, isLoading: isLoading(LOADING_KEY) };
 }

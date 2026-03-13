@@ -3,7 +3,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { isApiError } from '@/types/api.types';
 import { CartStore } from "@/store/cartStore";
 import { motion } from "framer-motion";
 
@@ -19,7 +21,8 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutForm() {
-  const { toast } = useToast();
+  const showToast    = useUIStore((s) => s.showToast);
+  const { handleError } = useErrorHandler();
   const items = CartStore((s) => s.items);
   const total = CartStore((s) => s.total);
   const clear = CartStore((s) => s.clear);
@@ -35,31 +38,29 @@ export default function CheckoutForm() {
 
   const onSubmit = async (data: CheckoutFormValues) => {
     if (items.length === 0) {
-      toast({
-        title: "Your cart is empty 🛒",
-        description: "Add some items before checking out.",
-        variant: "destructive",
-      });
+      showToast({ type: 'warning', message: 'Your cart is empty. Add items before checking out.' });
       return;
     }
 
-    toast({
-      title: "Processing your order...",
-      description: "Please wait a moment.",
-    });
+    try {
+      const res  = await fetch('/api/checkout', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ shippingDetails: data, items }),
+      });
+      const json = await res.json();
 
-    // Simulate API call or Stripe/M-Pesa integration
-    await new Promise((r) => setTimeout(r, 1200));
+      if (isApiError(json)) {
+        handleError(json);
+        return;
+      }
 
-    toast({
-      title: "Order placed successfully 🎉",
-      description: `Thank you ${data.fullName}, your total is $${total.toFixed(
-        2
-      )}.`,
-    });
-
-    clear();
-    reset();
+      showToast({ type: 'success', message: `Order placed! Thank you, ${data.fullName}.` });
+      clear();
+      reset();
+    } catch (err) {
+      handleError(err);
+    }
   };
 
   return (

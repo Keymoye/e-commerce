@@ -3,7 +3,8 @@
 import React, { useEffect } from "react";
 import { ToastProvider } from "@/components/ui/toast";
 import { AuthProvider } from "@/components/auth/AuthProvider";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { ToastContainer } from '@/components/ui/toast';
 import { initWebVitals, initPerformanceObserver } from "@/lib/web-vitals";
 import type { User } from "@supabase/supabase-js";
 
@@ -33,6 +34,7 @@ export default function AppProviders({
       <AuthProvider initialUser={initialUser}>
         <ErrorBoundary>{children}</ErrorBoundary>
       </AuthProvider>
+      <ToastContainer />
     </ToastProvider>
   );
 }

@@ -1,77 +1,81 @@
-"use client";
-import { createContext, useContext, useState, ReactNode } from "react";
-import { FiX } from "react-icons/fi"; // ✅ React Icons import
+'use client';
+import { useUIStore } from '@/store/uiStore';
+import { FiX, FiCheckCircle, FiAlertCircle, FiInfo, FiAlertTriangle } from 'react-icons/fi';
 
-type Toast = {
-  id: number; // ✅ Unique ID to manage individual dismissals
-  title: string;
-  description?: string;
-  variant?: "default" | "destructive";
-  duration?: number;
-};
+// ── Keep useToast for backwards compatibility with existing components ──
+// It maps old { title, description, variant } shape to new uiStore shape
+export function useToast() {
+  const showToast = useUIStore((s) => s.showToast);
 
-type ToastContextType = {
-  toast: (t: Omit<Toast, "id">) => void;
-};
-
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
-
-export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  // ✅ Create a new toast
-  const toast = (t: Omit<Toast, "id">) => {
-    const newToast = { ...t, id: Date.now() };
-    setToasts((prev) => [...prev, newToast]);
-
-    // Auto-dismiss after 3 seconds
-    setTimeout(() => removeToast(newToast.id), 3000);
+  const toast = ({
+    title,
+    description,
+    variant,
+  }: {
+    title:        string;
+    description?: string;
+    variant?:     'default' | 'destructive';
+  }) => {
+    const message = description ? `${title} ${description}` : title;
+    showToast({
+      type: variant === 'destructive' ? 'error' : 'success',
+      message,
+    });
   };
 
-  // ✅ Remove a specific toast
-  const removeToast = (id: number) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  return { toast };
+}
+
+// ── Icons per toast type ─────────────────────────────────────────────
+const ICONS = {
+  success: <FiCheckCircle className="text-green-500 shrink-0 mt-0.5" size={16} />,
+  error:   <FiAlertCircle className="text-red-500   shrink-0 mt-0.5" size={16} />,
+  warning: <FiAlertTriangle className="text-yellow-500 shrink-0 mt-0.5" size={16} />,
+  info:    <FiInfo className="text-blue-500  shrink-0 mt-0.5" size={16} />,
+};
+
+const BG = {
+  success: 'bg-background border border-green-200',
+  error:   'bg-background border border-red-200',
+  warning: 'bg-background border border-yellow-200',
+  info:    'bg-background border border-blue-200',
+};
+
+// ── ToastContainer — reads from uiStore, renders all active toasts ───
+export function ToastContainer() {
+  const toasts      = useUIStore((s) => s.toasts);
+  const dismissToast = useUIStore((s) => s.dismissToast);
 
   return (
-    <ToastContext.Provider value={{ toast }}>
-      {children}
-
-      {/* Toast container */}
-      <div className="fixed top-4 right-4 space-y-2 z-50">
-        {toasts.map((t) => (
-          <div
-            key={t.id}
-            className={`flex items-start justify-between gap-3 p-3 rounded-lg shadow-md text-sm min-w-[250px] transition-all duration-200 ${
-              t.variant === "destructive"
-                ? "bg-red-600 text-white"
-                : "bg-secondary text-background"
-            }`}
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+      {toasts.map((t) => (
+        <div
+          key={t.id}
+          className={`
+            flex items-start gap-3 p-3 rounded-lg shadow-lg text-sm
+            pointer-events-auto
+            animate-in slide-in-from-bottom-2 fade-in duration-200
+            ${BG[t.type]}
+          `}
+        >
+          {ICONS[t.type]}
+          <p className="flex-1 text-foreground">{t.message}</p>
+          <button
+            onClick={() => dismissToast(t.id)}
+            className="text-foreground/40 hover:text-foreground/80 transition shrink-0"
+            aria-label="Dismiss"
           >
-            <div className="flex-1">
-              <strong>{t.title}</strong>
-              {t.description && (
-                <p className="text-xs opacity-90 mt-1">{t.description}</p>
-              )}
-            </div>
-
-            {/* ✅ Interactive “X” button */}
-            <button
-              onClick={() => removeToast(t.id)}
-              className="text-inherit hover:opacity-70 transition"
-              aria-label="Close toast"
-            >
-              <FiX size={16} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </ToastContext.Provider>
+            <FiX size={14} />
+          </button>
+        </div>
+      ))}
+    </div>
   );
 }
 
-export function useToast() {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error("useToast must be used within ToastProvider");
-  return ctx;
+// ── ToastProvider — kept for AppProviders compatibility ─────────────
+// It no longer manages state (uiStore does), but must still wrap children
+// so existing useToast() callers inside it don't break.
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

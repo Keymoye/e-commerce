@@ -1,9 +1,9 @@
 import type { User } from "@supabase/supabase-js";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 
 export async function getUser(): Promise<User | null> {
   try {
-    const supabase = await createServerSupabaseClient();
+    const supabase = await createServerClient();
     const {
       data: { user },
       error,

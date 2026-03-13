@@ -1,7 +1,7 @@
 // Web Vitals monitoring for Core Web Vitals (LCP, CLS, FID)
 // Reference: https://web.dev/vitals/
 
-import logger from "./logger";
+import { logger } from '@/logger';
 
 export type MetricValue = {
   name: string;
@@ -52,7 +52,7 @@ export function sendToAnalytics(metric: MetricValue) {
       }
     } catch (error) {
       // Silently fail if Sentry integration fails
-      logger.debug("Failed Sentry integration fails", { error: String(error) });
+      logger.debug({ message: 'Failed Sentry integration fails', error: String(error) });
     }
   }
 
@@ -67,17 +67,12 @@ export function sendToAnalytics(metric: MetricValue) {
         url: typeof window !== "undefined" ? window.location.href : "unknown",
       }),
     }).catch((error) => {
-      logger.debug("Failed to send web vitals", { error: String(error) });
+      logger.debug({ message: 'Failed to send web vitals', error: String(error) });
     });
   }
 
   // Structured logging for monitoring
-  logger.info("Web Vital recorded", {
-    metric: metric.name,
-    value: metric.value,
-    rating: metric.rating,
-    navigationType: metric.navigationType,
-  });
+  logger.info({ message: 'Web Vital recorded', metric: metric.name, value: metric.value, rating: metric.rating, navigationType: metric.navigationType });
 }
 
 /**
@@ -121,9 +116,7 @@ export async function initWebVitals() {
     try {
       webVitalsModule = await eval('import("web-vitals")');
     } catch {
-      logger.debug(
-        "web-vitals package not installed, skipping Web Vitals monitoring"
-      );
+      logger.debug({ message: 'web-vitals package not installed, skipping Web Vitals monitoring' });
       return;
     }
 
@@ -169,11 +162,9 @@ export async function initWebVitals() {
       });
     }
 
-    logger.debug("Web Vitals monitoring initialized");
+    logger.debug({ message: 'Web Vitals monitoring initialized' });
   } catch (error) {
-    logger.debug("Web Vitals monitoring setup failed", {
-      error: String(error),
-    });
+    logger.debug({ message: 'Web Vitals monitoring setup failed', error: String(error) });
   }
 }
 
@@ -195,10 +186,7 @@ export function initPerformanceObserver() {
       const observer = new PerformanceObserver((list: any) => {
         for (const entry of list.getEntries()) {
           if (entry.duration > 50) {
-            logger.debug("Long task detected", {
-              duration: entry.duration,
-              name: entry.name,
-            });
+            logger.debug({ message: 'Long task detected', duration: entry.duration, name: entry.name });
           }
         }
       });
@@ -207,11 +195,11 @@ export function initPerformanceObserver() {
         observer.observe({ entryTypes: ["longtask"] });
       } catch {
         // longtask not supported in all browsers
-        logger.debug("PerformanceObserver longtask not supported");
+        logger.debug({ message: 'PerformanceObserver longtask not supported' });
       }
     }
   } catch (error) {
-    logger.debug("Performance observer setup failed", { error: String(error) });
+    logger.debug({ message: 'Performance observer setup failed', error: String(error) });
   }
 }
 

@@ -31,7 +31,7 @@ export default function ProductsHub(props: ProductsHubProps) {
 
 /* Featured Products (Home) */
 function FeaturedProducts({ limit }: { limit: number }) {
-  const { products, loading } = usePaginatedProducts({
+  const { products, isLoading } = usePaginatedProducts({
     page: 1,
     pageSize: limit,
   });
@@ -39,7 +39,7 @@ function FeaturedProducts({ limit }: { limit: number }) {
   return (
     <section aria-label="Featured products">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
-        {loading
+        {isLoading
           ? Array.from({ length: limit }).map((_, i) => (
               <ProductSkeleton key={i} />
             ))
@@ -70,7 +70,7 @@ function FullProducts({
 
   const [category, setCategory] = useState(categoryFromUrl ?? "all");
 
-  const { products, totalPages, loading, error } = usePaginatedProducts({
+  const { products, totalPages, isLoading } = usePaginatedProducts({
     page,
     pageSize,
     category: category === "all" ? undefined : category,
@@ -149,7 +149,7 @@ function FullProducts({
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
-        {loading
+        {isLoading
           ? Array.from({ length: pageSize }).map((_, i) => (
               <ProductSkeleton key={i} />
             ))
@@ -159,7 +159,7 @@ function FullProducts({
       </div>
 
       {/* Showing + Pagination */}
-      {!loading && products && products.length > 0 && (
+      {!isLoading && products && products.length > 0 && (
         <>
           <div className="text-sm text-foreground/60 mt-4 mb-2">
             Showing {showing} products • Page {page} of {totalPages}
@@ -175,16 +175,9 @@ function FullProducts({
       )}
 
       {/* Empty state */}
-      {!loading && (!products || products.length === 0) && (
+      {!isLoading && (!products || products.length === 0) && (
         <div className="flex justify-center items-center h-[40vh] text-foreground/60">
           No products found 🔍
-        </div>
-      )}
-
-      {/* Error */}
-      {error && (
-        <div className="mt-4 text-center text-red-500">
-          Error loading products: {String(error)}
         </div>
       )}
     </section>

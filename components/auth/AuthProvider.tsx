@@ -10,7 +10,7 @@ import {
 } from "react";
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
-import logger from "@/lib/logger";
+import { logger } from '@/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -39,10 +39,7 @@ export function AuthProvider({
   // Mount auth listener ONCE
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      logger.info("AuthProvider", "Auth event", {
-        event,
-        userId: session?.user?.id,
-      });
+      logger.info({ message: 'Auth event', event, userId: session?.user?.id });
 
       setUser(session?.user ?? null);
     });

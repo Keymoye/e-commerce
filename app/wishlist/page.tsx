@@ -6,12 +6,22 @@ import Link from "next/link";
 import { FaTrash, FaShoppingCart, FaHeartBroken } from "react-icons/fa";
 import { useWishlist } from "@/hooks/wishlist/useWishlist";
 import { CartStore } from "@/store/cartStore";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+
+function WishlistFallback() {
+  return (
+    <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center my-8">
+      <p className="font-medium text-red-700">Failed to load wishlist.</p>
+      <p className="text-sm text-red-500 mt-1">Please refresh the page to try again.</p>
+    </div>
+  );
+}
 
 export default function WishlistPage() {
   const { items, handleRemove, clear } = useWishlist();
   const addToCart = CartStore((s) => s.addItem);
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
 
   if (items.length === 0) {
     return (
@@ -33,14 +43,12 @@ export default function WishlistPage() {
     addToCart(item, 1);
     handleRemove(item.id);
 
-    toast({
-      title: "Moved to cart 🛒",
-      description: `${item.name} has been added to your cart.`,
-    });
+    showToast({ type: 'success', message: `${item.name} has been added to your cart.` });
   };
 
   return (
-    <section className="p-6 max-w-4xl mx-auto">
+    <ErrorBoundary fallback={<WishlistFallback />}>
+      <section className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Your Wishlist</h2>
         <button
@@ -107,5 +115,6 @@ export default function WishlistPage() {
         </div>
       </AnimatePresence>
     </section>
+    </ErrorBoundary>
   );
 }
