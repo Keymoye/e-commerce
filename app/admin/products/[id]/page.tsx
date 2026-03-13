@@ -1,6 +1,7 @@
 // app/admin/products/[id]/page.tsx
 import { getAdminProductById } from "@/services/admin/product";
 import EditProductForm from "@/components/admin/ui/EditProductForm";
+import { productSchema } from "@/services/admin/product.schemas";
 
 interface Props {
   params: { id: string };
@@ -11,5 +12,14 @@ export default async function EditProductPage({ params }: Props) {
 
   if (!product) return <p>Product not found</p>;
 
-  return <EditProductForm initialData={product} />;
+  // Transform Product to match schema
+  const initialData = productSchema.parse({
+    id: product.id,
+    name: product.name,
+    base_price_kes: product.base_price_kes,
+    stock: product.stock,
+    category_id: product.category_id,
+  });
+
+  return <EditProductForm initialData={initialData} />;
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { z } from "zod";
 import { updateAdminProduct } from "@/services/admin/product";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 import { useRouter } from "next/navigation";
 import { productSchema } from "@/services/admin/product.schemas";
 
@@ -13,7 +13,7 @@ interface Props {
 
 export default function EditProductForm({ initialData }: Props) {
   const router = useRouter();
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
   const [form, setForm] = useState(initialData);
   const [loading, setLoading] = useState(false);
 
@@ -27,18 +27,10 @@ export default function EditProductForm({ initialData }: Props) {
 
     try {
       await updateAdminProduct(form);
-      toast({
-        title: "Success",
-        description: "Product updated successfully",
-        variant: "default",
-      });
+      showToast({ type: 'success', message: 'Product updated successfully' });
       router.push("/admin/products");
     } catch (err) {
-      toast({
-        title: "Error",
-        description: err instanceof Error ? err.message : "Update failed",
-        variant: "destructive",
-      });
+      showToast({ type: 'error', message: err instanceof Error ? err.message : 'Update failed' });
     } finally {
       setLoading(false);
     }
@@ -56,11 +48,11 @@ export default function EditProductForm({ initialData }: Props) {
         />
       </div>
       <div>
-        <label>Price</label>
+        <label>Price (KES)</label>
         <input
           type="number"
-          value={form.price}
-          onChange={(e) => handleChange("price", parseFloat(e.target.value))}
+          value={form.base_price_kes / 100}
+          onChange={(e) => handleChange("base_price_kes", Math.round(parseFloat(e.target.value) * 100))}
           className="input"
         />
       </div>
@@ -74,11 +66,11 @@ export default function EditProductForm({ initialData }: Props) {
         />
       </div>
       <div>
-        <label>Category</label>
+        <label>Category ID</label>
         <input
           type="text"
-          value={form.category}
-          onChange={(e) => handleChange("category", e.target.value)}
+          value={form.category_id}
+          onChange={(e) => handleChange("category_id", e.target.value)}
           className="input"
         />
       </div>

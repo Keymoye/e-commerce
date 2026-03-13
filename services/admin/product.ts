@@ -46,9 +46,9 @@ export async function updateAdminProduct(data: z.infer<typeof productSchema>) {
     .from("products")
     .update({
       name: parsed.name,
-      price: parsed.price,
+      base_price_kes: parsed.base_price_kes,
       stock: parsed.stock,
-      category: parsed.category,
+      category_id: parsed.category_id,
     })
     .eq("id", parsed.id);
 
@@ -64,7 +64,12 @@ export async function createAdminProduct(
   const supabase = createAdminSupabase();
   const { data: product, error } = await supabase
     .from("products")
-    .insert([parsed])
+    .insert([{
+      name: parsed.name,
+      base_price_kes: parsed.base_price_kes,
+      stock: parsed.stock,
+      category_id: parsed.category_id,
+    }])
     .select()
     .single();
 

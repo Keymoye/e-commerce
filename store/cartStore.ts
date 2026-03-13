@@ -7,7 +7,7 @@ export interface CartItem {
   id: string;
   name: string;
   price: number;
-  image_urls: string;
+  image_url: string;
   quantity: number;
 }
 
@@ -57,8 +57,8 @@ export const CartStore = create<CartState>()(
                 {
                   id: product.id,
                   name: product.name,
-                  price: product.price,
-                  image_urls: product.image_urls,
+                  price: product.base_price_kes / 100,
+                  image_url: product.images?.[0]?.url || "/5.webp",
                   quantity,
                 },
               ];

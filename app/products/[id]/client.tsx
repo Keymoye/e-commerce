@@ -7,7 +7,7 @@ import { WishlistStore } from "@/store/wishlistStore";
 import { motion } from "framer-motion";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 import { useEffect } from "react";
 import { productJsonLd } from "@/lib/seo";
 
@@ -20,23 +20,20 @@ export default function ProductDetailClient({
 }: ProductDetailClientProps) {
   const { addItem: addToCart } = CartStore();
   const { toggleWishlist, isWishlisted } = WishlistStore();
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
 
   const inWishlist = isWishlisted(product.id);
 
   const handleAddToCart = () => {
     addToCart(product, 1);
-    toast({
-      title: "Added to cart 🛒",
-      description: `${product.name} has been added to your cart.`,
-    });
+    showToast({ type: 'success', message: `${product.name} has been added to your cart.` });
   };
 
   const handleWishlist = () => {
     toggleWishlist(product);
-    toast({
-      title: inWishlist ? "Removed from wishlist 💔" : "Added to wishlist ❤️",
-      description: inWishlist
+    showToast({
+      type: inWishlist ? 'info' : 'success',
+      message: inWishlist
         ? `${product.name} removed from wishlist.`
         : `${product.name} added to wishlist.`,
     });
@@ -89,7 +86,7 @@ export default function ProductDetailClient({
             {product.name}
           </h1>
           <p className="text-sm text-foreground/70">
-            {product.brand} • {product.category}
+            {product.brand} • {product.category?.name || 'Uncategorized'}
           </p>
 
           {/* Rating */}
@@ -103,7 +100,7 @@ export default function ProductDetailClient({
           {/* Price & Stock */}
           <div className="bg-primary/10 p-4 rounded-lg mb-6">
             <div className="text-2xl font-bold text-accent mb-2">
-              ${product.price.toFixed(2)}
+              ${(product.base_price_kes / 100).toFixed(2)}
             </div>
             <p
               className={`text-sm font-semibold ${product.stock > 0 ? "text-green-500" : "text-red-500"}`}

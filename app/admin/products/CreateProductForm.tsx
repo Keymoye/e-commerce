@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 import { createAdminProduct } from "@/services/admin/product";
 
 export default function CreateProductForm({
@@ -9,12 +9,12 @@ export default function CreateProductForm({
 }: {
   onSuccess: () => void;
 }) {
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
   const [form, setForm] = useState({
     name: "",
-    price: 0,
+    base_price_kes: 0,
     stock: 0,
-    category: "",
+    category_id: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -23,19 +23,15 @@ export default function CreateProductForm({
     setLoading(true);
 
     try {
-      await createAdminProduct(form);
-      toast({
-        title: "Product created ✅",
-        description: "The product has been added.",
+      await createAdminProduct({
+        ...form,
+        base_price_kes: Math.round(form.base_price_kes * 100),
       });
+      showToast({ type: 'success', message: 'The product has been added.' });
       onSuccess(); // Refresh table or page
-      setForm({ name: "", price: 0, stock: 0, category: "" });
+      setForm({ name: "", base_price_kes: 0, stock: 0, category_id: "" });
     } catch (err: unknown) {
-      toast({
-        title: "Create failed ⚠️",
-        description: err instanceof Error ? err.message : "Unknown error",
-        variant: "destructive",
-      });
+      showToast({ type: 'error', message: err instanceof Error ? err.message : 'Unknown error' });
     } finally {
       setLoading(false);
     }
@@ -51,9 +47,9 @@ export default function CreateProductForm({
       />
       <input
         type="number"
-        placeholder="Price"
-        value={form.price}
-        onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+        placeholder="Price (KES)"
+        value={form.base_price_kes / 100}
+        onChange={(e) => setForm({ ...form, base_price_kes: Number(e.target.value) })}
         className="w-full border p-2 rounded"
       />
       <input
@@ -64,9 +60,9 @@ export default function CreateProductForm({
         className="w-full border p-2 rounded"
       />
       <input
-        placeholder="Category"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: e.target.value })}
+        placeholder="Category ID"
+        value={form.category_id}
+        onChange={(e) => setForm({ ...form, category_id: e.target.value })}
         className="w-full border p-2 rounded"
       />
       <button

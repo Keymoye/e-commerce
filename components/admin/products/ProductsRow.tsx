@@ -1,3 +1,5 @@
+"use client";
+
 import { deleteAdminProduct } from "@/services/admin/product";
 import Link from "next/link";
 import { Product } from "@/types/product";
@@ -22,8 +24,8 @@ export default function ProductsRow({
   return (
     <tr className="border-t hover:bg-muted/50">
       <td className="p-3 font-medium">{product.name}</td>
-      <td className="p-3 text-center">{product.category}</td>
-      <td className="p-3 text-center">${product.price.toFixed(2)}</td>
+      <td className="p-3 text-center">{product.category?.name || 'Uncategorized'}</td>
+      <td className="p-3 text-center">${(product.base_price_kes / 100).toFixed(2)}</td>
       <td className="p-3 text-center">
         {product.stock > 0 ? "In stock" : "Out"}
       </td>

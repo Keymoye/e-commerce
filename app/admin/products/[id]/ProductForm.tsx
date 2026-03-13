@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Product } from "@/types/product";
-import { useToast } from "@/components/ui/toast";
+import { useUIStore } from '@/store/uiStore';
 import { updateAdminProduct } from "@/services/admin/product";
 
 interface Props {
@@ -10,12 +10,12 @@ interface Props {
 }
 
 export default function ProductForm({ product }: Props) {
-  const { toast } = useToast();
+  const showToast = useUIStore((s) => s.showToast);
   const [form, setForm] = useState({
     name: product.name,
-    price: product.price,
+    price: product.base_price_kes / 100,
     stock: product.stock,
-    category: product.category,
+    category: product.category_id,
   });
   const [loading, setLoading] = useState(false);
 
@@ -24,17 +24,15 @@ export default function ProductForm({ product }: Props) {
     setLoading(true);
 
     try {
-      await updateAdminProduct({ ...form, id: product.id });
-      toast({
-        title: "Product updated ✅",
-        description: "Your changes have been saved.",
+      await updateAdminProduct({ 
+        ...form, 
+        id: product.id,
+        base_price_kes: Math.round(form.price * 100),
+        category_id: form.category,
       });
+      showToast({ type: 'success', message: 'Your changes have been saved.' });
     } catch (err: unknown) {
-      toast({
-        title: "Update failed ⚠️",
-        description: err instanceof Error ? err.message : "Unknown error",
-        variant: "destructive",
-      });
+      showToast({ type: 'error', message: err instanceof Error ? err.message : 'Unknown error' });
     } finally {
       setLoading(false);
     }
@@ -72,7 +70,7 @@ export default function ProductForm({ product }: Props) {
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Category</label>
+        <label className="block text-sm mb-1">Category ID</label>
         <input
           className="w-full border p-2 rounded"
           value={form.category}

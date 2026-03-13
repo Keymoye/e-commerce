@@ -98,7 +98,7 @@ export default function WishlistPage() {
                   {item.description}
                 </p>
                 <p className="mt-2 text-sm font-bold text-accent">
-                  ${item.price.toFixed(2)}
+                  ${(item.base_price_kes / 100).toFixed(2)}
                 </p>
               </div>
 

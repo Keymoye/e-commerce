@@ -1,64 +1,58 @@
-// scripts/seed-products.ts
-import { faker } from "@faker-js/faker";
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" }); // <-- FORCE LOAD THIS FILE
+// scripts/seed-products.ts — updated for new schema
+import { faker } from '@faker-js/faker';
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+import { createClient } from '@supabase/supabase-js';
 
-import { createClient } from "@supabase/supabase-js";
-
-// 1️⃣ Setup Supabase client
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// 2️⃣ Define categories and related image keywords
-const categories = [
-  { name: "Electronics", keywords: ["smartphone", "laptop", "headphones"] },
-  { name: "Cosmetics", keywords: ["lipstick", "skincare", "perfume"] },
-  { name: "Clothing", keywords: ["shirt", "jacket", "shoes"] },
+const CATEGORIES = [
+  { name: 'Electronics', slug: 'electronics' },
+  { name: 'Cosmetics',   slug: 'cosmetics'   },
+  { name: 'Clothing',    slug: 'clothing'    },
 ];
 
-// 3️⃣ Function to generate a realistic image URL
-function generateProductImage(categoryName: string) {
-  const cat = categories.find((c) => c.name === categoryName);
-  const keyword = faker.helpers.arrayElement(cat?.keywords || ["product"]);
-  const randomSeed = faker.number.int({ min: 1, max: 1000 });
-  return `https://source.unsplash.com/400x400/?${keyword}&sig=${randomSeed}`;
-}
+async function seed() {
+  // 1. Insert categories
+  const { data: cats } = await supabase
+    .from('categories')
+    .upsert(CATEGORIES, { onConflict: 'slug' })
+    .select();
+  if (!cats?.length) throw new Error('Categories insert failed');
 
-// 4️⃣ Generate mock products
-function generateMockProducts(count: number) {
-  return Array.from({ length: count }).map(() => {
-    const category = faker.helpers.arrayElement(categories.map((c) => c.name));
+  // 2. Insert products
+  const products = Array.from({ length: 50 }).map(() => {
+    const cat = faker.helpers.arrayElement(cats);
+    const name = faker.commerce.productName();
     return {
-      id: faker.string.uuid(),
-      name: faker.commerce.productName(),
+      name,
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + faker.string.alphanumeric(4),
       brand: faker.company.name(),
-      category,
+      category_id: cat.id,
       description: faker.commerce.productDescription(),
-      price: parseFloat(faker.commerce.price({ min: 10, max: 500 })),
+      base_price_kes: Math.round(parseFloat(faker.commerce.price({ min: 1000, max: 50000 })) * 100),
       stock: faker.number.int({ min: 0, max: 100 }),
-      rating: faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
-      image_urls: [generateProductImage(category)],
-      tags: faker.helpers.arrayElements(
-        ["sale", "new", "popular", "eco", "trending"],
-        2
-      ),
-      specs: {
-        weight: `${faker.number.int({ min: 100, max: 1000 })}g`,
-        color: faker.color.human(),
-      },
+      tags: faker.helpers.arrayElements(['sale','new','popular','eco','trending'], 2),
+      specs: { weight: faker.number.int({ min: 100, max: 1000 }) + 'g', color: faker.color.human() },
     };
   });
-}
 
-// 5️⃣ Insert products into Supabase
-async function seed() {
-  const mockProducts = generateMockProducts(50); // Generate 50 products
-  const { error } = await supabase.from("products").insert(mockProducts);
+  const { data: insertedProducts, error } = await supabase.from('products').insert(products).select();
   if (error) throw error;
-  console.log("✅ Seeded", mockProducts.length, "products into Supabase!");
+
+  // 3. Insert primary images
+  const images = insertedProducts!.map(p => ({
+    product_id: p.id,
+    url: `https://source.unsplash.com/400x400/?product&sig=${faker.number.int({ min: 1, max: 9999 })}`,
+    is_primary: true,
+    sort_order: 0,
+  }));
+  await supabase.from('product_images').insert(images);
+
+  console.log(`Seeded ${insertedProducts!.length} products`);
 }
 
-// Run
 seed().catch((err) => console.error(err));

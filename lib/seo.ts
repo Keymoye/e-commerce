@@ -3,7 +3,7 @@ import { Product } from "@/types/product";
 
 export function productMetadata(product: Product): Metadata {
   const title = `${product.name} | Keystore`;
-  const description = `Buy ${product.name} by ${product.brand} - $${product.price.toFixed(
+  const description = `Buy ${product.name} by ${product.brand} - $${(product.base_price_kes / 100).toFixed(
     2
   )}. Rating: ${product.rating}/5. ${product.description}`;
   const url = `https://${process.env.NEXT_PUBLIC_SITE_URL || "localhost:3000"}/products/${product.id}`;
@@ -11,7 +11,7 @@ export function productMetadata(product: Product): Metadata {
   return {
     title,
     description,
-    keywords: [product.category, product.brand, ...product.tags],
+    keywords: [product.category?.name || 'Uncategorized', product.brand || '', ...product.tags],
     openGraph: {
       type: "website",
       url,
@@ -19,7 +19,7 @@ export function productMetadata(product: Product): Metadata {
       description,
       images: [
         {
-          url: product.image_urls?.[0] || "/5.webp",
+          url: product.images?.[0]?.url || "/5.webp",
           width: 400,
           height: 400,
           alt: product.name,
@@ -30,7 +30,7 @@ export function productMetadata(product: Product): Metadata {
       card: "summary_large_image",
       title,
       description,
-      images: [product.image_urls?.[0] || "/5.webp"],
+      images: [product.images?.[0]?.url || "/5.webp"],
     },
   };
 }
@@ -79,7 +79,7 @@ export function productJsonLd(product: Product): string {
     "@context": "https://schema.org/",
     "@type": "Product",
     name: product.name,
-    image: product.image_urls?.[0] || "/5.webp",
+    image: product.images?.[0]?.url || "/5.webp",
     description: product.description,
     brand: {
       "@type": "Brand",
@@ -89,7 +89,7 @@ export function productJsonLd(product: Product): string {
       "@type": "Offer",
       url: `https://${process.env.NEXT_PUBLIC_SITE_URL || "localhost:3000"}/products/${product.id}`,
       priceCurrency: "USD",
-      price: product.price.toFixed(2),
+      price: (product.base_price_kes / 100).toFixed(2),
       availability: product.stock > 0 ? "InStock" : "OutOfStock",
     },
     aggregateRating: {

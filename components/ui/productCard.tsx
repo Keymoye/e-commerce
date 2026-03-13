@@ -70,7 +70,7 @@ function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
           <p className="text-xs text-foreground/70 line-clamp-1 break-words">
-            {product.brand} • {product.category}
+            {product.brand} • {product.category?.name || 'Uncategorized'}
           </p>
           <p className="mt-1 text-sm line-clamp-2 break-words">
             {product.description}
@@ -82,7 +82,7 @@ function ProductCard({ product }: ProductCardProps) {
       <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <StarRating rating={product.rating} />
         <div className="text-right">
-          <div className="text-lg font-bold">${product.price.toFixed(2)}</div>
+          <div className="text-lg font-bold">${(product.base_price_kes / 100).toFixed(2)}</div>
           <div className="text-xs text-accent">Stock: {product.stock}</div>
         </div>
       </div>
