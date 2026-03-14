@@ -31,9 +31,9 @@ export default function OrdersTable({
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-gray-200">
           <table className="min-w-full text-sm">
-            <thead className="bg-muted">
+            <thead className="bg-gray-100">
               <tr>
                 <th className="p-3 text-left">Order #</th>
                 <th className="p-3 text-left">Customer</th>
@@ -46,19 +46,19 @@ export default function OrdersTable({
               {[...Array(5)].map((_, i) => (
                 <tr key={i} className="border-t">
                   <td className="p-3">
-                    <div className="h-4 bg-muted rounded animate-pulse"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse"></div>
                   </td>
                   <td className="p-3">
-                    <div className="h-4 bg-muted rounded animate-pulse w-32"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-32"></div>
                   </td>
                   <td className="p-3">
-                    <div className="h-4 bg-muted rounded animate-pulse mx-auto w-16"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse mx-auto w-16"></div>
                   </td>
                   <td className="p-3">
-                    <div className="h-4 bg-muted rounded animate-pulse ml-auto w-20"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse ml-auto w-20"></div>
                   </td>
                   <td className="p-3">
-                    <div className="h-4 bg-muted rounded animate-pulse w-24"></div>
+                    <div className="h-4 bg-gray-100 rounded animate-pulse w-24"></div>
                   </td>
                 </tr>
               ))}
@@ -71,25 +71,25 @@ export default function OrdersTable({
 
   if (error) {
     return (
-      <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 text-center">
-        <h3 className="font-medium text-destructive mb-2">Error loading orders</h3>
-        <p className="text-sm text-destructive/80">{error}</p>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+        <h3 className="font-medium text-red-600 mb-2">Error loading orders</h3>
+        <p className="text-sm text-red-500">{error}</p>
       </div>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-muted/30 p-12 text-center">
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
         <div className="mb-4">
-          <div className="mx-auto h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-            <svg className="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center">
+            <svg className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
           </div>
         </div>
-        <h3 className="text-lg font-medium text-foreground mb-2">No orders found</h3>
-        <p className="text-sm text-muted-foreground">Orders will appear here when customers make purchases.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+        <p className="text-sm text-gray-500">Orders will appear here when customers make purchases.</p>
       </div>
     );
   }
@@ -109,19 +109,19 @@ export default function OrdersTable({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-lg border border-border bg-card">
+      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
         <table
           className="min-w-full text-sm"
           role="table"
           aria-label="Admin orders table"
         >
-          <thead className="bg-muted">
+          <thead className="bg-gray-100">
             <tr>
-              <th className="p-3 text-left font-medium text-foreground">Order #</th>
-              <th className="p-3 text-left font-medium text-foreground">Customer</th>
-              <th className="p-3 text-center font-medium text-foreground">Status</th>
-              <th className="p-3 text-right font-medium text-foreground">Total</th>
-              <th className="p-3 text-left font-medium text-foreground">Date</th>
+              <th className="p-3 text-left font-medium text-gray-900">Order #</th>
+              <th className="p-3 text-left font-medium text-gray-900">Customer</th>
+              <th className="p-3 text-center font-medium text-gray-900">Status</th>
+              <th className="p-3 text-right font-medium text-gray-900">Total</th>
+              <th className="p-3 text-left font-medium text-gray-900">Date</th>
             </tr>
           </thead>
           <tbody>
@@ -129,20 +129,20 @@ export default function OrdersTable({
               <tr
                 key={order.id}
                 className={`border-t transition-colors ${
-                  index % 2 === 0 ? 'bg-background' : 'bg-muted/30'
-                } hover:bg-muted/50`}
+                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+                } hover:bg-gray-100`}
               >
-                <td className="p-3 font-medium text-foreground">{order.order_number}</td>
-                <td className="p-3 text-muted-foreground">{order.user_profiles.email}</td>
+                <td className="p-3 font-medium text-gray-900">{order.order_number}</td>
+                <td className="p-3 text-gray-500">{order.user_profiles.email}</td>
                 <td className="p-3 text-center">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                     {order.status}
                   </span>
                 </td>
-                <td className="p-3 text-right font-medium text-foreground">
+                <td className="p-3 text-right font-medium text-gray-900">
                   ${(order.total_kes / 100).toFixed(2)}
                 </td>
-                <td className="p-3 text-muted-foreground">
+                <td className="p-3 text-gray-500">
                   {new Date(order.created_at).toLocaleDateString()}
                 </td>
               </tr>

@@ -16,9 +16,9 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-border">
+      <aside className="w-64 border-r border-gray-200">
         <Sidebar />
       </aside>
 
@@ -28,7 +28,7 @@ export default async function AdminLayout({
 
         <main
           id="admin-content"
-          className="flex-1 p-6 focus:outline-none"
+          className="flex-1 p-6 bg-gray-50 focus:outline-none"
           tabIndex={-1}
         >
           {children}

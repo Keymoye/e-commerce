@@ -38,9 +38,9 @@ export default function ProductsRow({
 
   return (
     <>
-      <td className="p-3 font-medium text-foreground">{product.name}</td>
-      <td className="p-3 text-center text-muted-foreground">{product.category?.name || 'Uncategorized'}</td>
-      <td className="p-3 text-center text-foreground">${(product.base_price_kes / 100).toFixed(2)}</td>
+      <td className="p-3 font-medium text-gray-900">{product.name}</td>
+      <td className="p-3 text-center text-gray-500">{product.category?.name || 'Uncategorized'}</td>
+      <td className="p-3 text-center text-gray-900">${(product.base_price_kes / 100).toFixed(2)}</td>
       <td className="p-3 text-center">
         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
           product.stock > 0 
@@ -53,13 +53,13 @@ export default function ProductsRow({
       <td className="p-3 text-center space-x-2">
         <Link
           href={`/admin/products/${product.id}`}
-          className="text-primary hover:underline text-sm font-medium"
+          className="text-blue-600 hover:underline text-sm font-medium"
         >
           Edit
         </Link>
         <button
           onClick={handleDelete}
-          className="text-destructive hover:underline text-sm font-medium"
+          className="text-red-600 hover:underline text-sm font-medium"
         >
           Delete
         </button>

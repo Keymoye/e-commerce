@@ -20,8 +20,8 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Admin navigation" className="h-full p-4 space-y-2 bg-card border-r border-border">
-      <h1 className="text-lg font-semibold mb-6 text-foreground">Admin</h1>
+    <nav aria-label="Admin navigation" className="h-full p-4 space-y-2 bg-white border-r border-gray-200">
+      <h1 className="text-lg font-semibold mb-6 text-gray-900">Admin</h1>
 
       {navItems.map(({ href, label, icon: Icon, comingSoon }) => {
         const isActive = pathname === href;
@@ -30,13 +30,13 @@ export default function Sidebar() {
           return (
             <div
               key={href}
-              className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground bg-muted/50"
+              className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 bg-gray-100"
             >
               <div className="flex items-center gap-3">
                 <Icon size={18} aria-hidden />
                 <span>{label}</span>
               </div>
-              <span className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded-full">
+              <span className="text-xs px-2 py-1 bg-gray-100 text-gray-500 rounded-full">
                 Coming Soon
               </span>
             </div>
@@ -49,8 +49,8 @@ export default function Sidebar() {
             href={href}
             className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
               ${isActive 
-                ? 'bg-primary text-primary-foreground' 
-                : 'text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-accent'
+                ? 'bg-blue-600 text-white' 
+                : 'text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500'
               }`}
           >
             <Icon size={18} aria-hidden />

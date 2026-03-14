@@ -29,22 +29,22 @@ export default function TopBar() {
 
   return (
     <header
-      className="h-14 border-b border-border px-6 flex items-center justify-between bg-background"
+      className="h-14 border-b border-gray-200 px-6 flex items-center justify-between bg-white"
       role="banner"
     >
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold text-foreground">
+        <h1 className="text-lg font-semibold text-gray-900">
           {getPageTitle()}
         </h1>
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-gray-500">
           {userEmail}
         </div>
         <button
           onClick={logout}
-          className="flex items-center gap-2 text-sm text-foreground hover:text-destructive focus:outline-none focus:ring-2 focus:ring-destructive transition-colors"
+          className="flex items-center gap-2 text-sm text-gray-900 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
           aria-label="Sign out"
         >
           <FiLogOut size={16} />
