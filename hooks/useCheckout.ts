@@ -26,6 +26,7 @@ export function useCheckout() {
   const { handleError }              = useErrorHandler();
   const { setLoading, isLoading, showToast } = useUIStore();
   const items = CartStore((s) => s.items);
+  const clearCart = CartStore((s) => s.clear);
   const LOADING_KEY = 'checkout.submit';
  
   const submitCheckout = async (data: CheckoutFormData) => {
@@ -64,8 +65,10 @@ export function useCheckout() {
  
       if (json.data.paymentMethod === 'stripe') {
         setClientSecret(json.data.clientSecret);
+        clearCart();
       } else {
         setCheckoutRequestId(json.data.checkoutRequestId);
+        clearCart();
         showToast({ type: 'info', message: 'Check your phone — M-Pesa prompt sent!' });
       }
     } catch (err) {
