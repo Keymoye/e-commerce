@@ -1,91 +1,138 @@
-// services/admin/products.ts
-"use server";
-import { createAdminSupabase } from "@/lib/supabase/admin";
-import { productSchema, createProductSchema } from "./product.schemas";
-import { Product } from "@/types/product";
-import { z } from "zod";
+// services/admin/product.ts
+import { createServerClient } from '@/lib/supabase/server';
+import { AppError } from '@/errors/AppError';
+import { logger } from '@/logger';
+import { productSchema, createProductSchema } from './product.schemas';
+import { Product } from '@/types/product';
+import { z } from 'zod';
 
-export async function getAdminProducts(page: number, pageSize: number) {
-  const supabase = createAdminSupabase();
+export const adminProductService = {
+  async getProducts(page: number, pageSize: number) {
+    logger.debug({ message: 'Fetching admin products', page, pageSize });
+    
+    const supabase = await createServerClient();
 
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
 
-  const { data, count, error } = await supabase
-    .from("products")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(from, to);
+    const { data, count, error } = await supabase
+      .from("products")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
-  if (error) throw error;
+    if (error) {
+      logger.error({ message: 'Failed to fetch admin products', error: error.message });
+      throw AppError.database('Failed to fetch products');
+    }
 
-  return {
-    products: data ?? [],
-    totalPages: Math.max(1, Math.ceil((count ?? 0) / pageSize)),
-  };
+    const result = {
+      products: data ?? [],
+      totalPages: Math.max(1, Math.ceil((count ?? 0) / pageSize)),
+    };
+
+    logger.info({ message: 'Admin products fetched successfully', count: result.products.length, totalPages: result.totalPages });
+    return result;
+  },
+
+  async getProductById(id: string): Promise<Product> {
+    logger.debug({ message: 'Fetching admin product by ID', productId: id });
+    
+    const supabase = await createServerClient();
+
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      logger.error({ message: 'Failed to fetch admin product', productId: id, error: error.message });
+      throw AppError.notFound('Product not found');
+    }
+
+    logger.info({ message: 'Admin product fetched successfully', productId: id });
+    return data;
+  },
+
+  async updateProduct(id: string, data: z.infer<typeof productSchema>) {
+    logger.debug({ message: 'Updating admin product', productId: id });
+    
+    const parsed = productSchema.parse(data);
+    const supabase = await createServerClient();
+
+    const { error } = await supabase
+      .from("products")
+      .update({
+        name: parsed.name,
+        base_price_kes: parsed.base_price_kes,
+        stock: parsed.stock,
+        category_id: parsed.category_id,
+      })
+      .eq("id", id);
+
+    if (error) {
+      logger.error({ message: 'Failed to update admin product', productId: id, error: error.message });
+      throw AppError.database('Failed to update product');
+    }
+
+    logger.info({ message: 'Admin product updated successfully', productId: id });
+    return true;
+  },
+
+  async createProduct(data: z.infer<typeof createProductSchema>) {
+    logger.debug({ message: 'Creating admin product' });
+    
+    const parsed = createProductSchema.parse(data);
+    const supabase = await createServerClient();
+    
+    const { data: product, error } = await supabase
+      .from("products")
+      .insert([{
+        name: parsed.name,
+        base_price_kes: parsed.base_price_kes,
+        stock: parsed.stock,
+        category_id: parsed.category_id,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      logger.error({ message: 'Failed to create admin product', error: error.message });
+      throw AppError.database('Failed to create product');
+    }
+
+    logger.info({ message: 'Admin product created successfully', productId: product.id });
+    return product;
+  },
+
+  async deleteProduct(productId: string) {
+    logger.debug({ message: 'Deleting admin product', productId });
+    
+    const supabase = await createServerClient();
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", productId);
+
+    if (error) {
+      logger.error({ message: 'Failed to delete admin product', productId, error: error.message });
+      throw AppError.database('Failed to delete product');
+    }
+
+    logger.info({ message: 'Admin product deleted successfully', productId });
+    return true;
+  },
+};
+
+// Export factory function for dependency injection
+export function createAdminProductService() {
+  return adminProductService;
 }
 
-export async function getAdminProductById(id: string): Promise<Product | null> {
-  const supabase = createAdminSupabase();
-
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
-
-  if (error) return null;
-  return data;
-}
-
-export async function updateAdminProduct(data: z.infer<typeof productSchema>) {
-  const parsed = productSchema.parse(data);
-  const supabase = createAdminSupabase();
-
-  const { error } = await supabase
-    .from("products")
-    .update({
-      name: parsed.name,
-      base_price_kes: parsed.base_price_kes,
-      stock: parsed.stock,
-      category_id: parsed.category_id,
-    })
-    .eq("id", parsed.id);
-
-  if (error) throw error;
-
-  return true;
-}
-
-export async function createAdminProduct(
-  data: z.infer<typeof createProductSchema>
-) {
-  const parsed = createProductSchema.parse(data);
-  const supabase = createAdminSupabase();
-  const { data: product, error } = await supabase
-    .from("products")
-    .insert([{
-      name: parsed.name,
-      base_price_kes: parsed.base_price_kes,
-      stock: parsed.stock,
-      category_id: parsed.category_id,
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-
-  return product;
-}
-
-export async function deleteAdminProduct(productId: string) {
-  const supabase = createAdminSupabase();
-  const { error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId);
-
-  if (error) throw error;
-
-  return true;
-}
+// Legacy exports for backward compatibility
+export const getAdminProducts = adminProductService.getProducts;
+export const getAdminProductById = adminProductService.getProductById;
+export const updateAdminProduct = adminProductService.updateProduct;
+export const createAdminProduct = adminProductService.createProduct;
+export const deleteAdminProduct = adminProductService.deleteProduct;

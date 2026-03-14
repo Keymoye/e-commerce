@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useUIStore } from '@/store/uiStore';
-import { createAdminProduct } from "@/services/admin/product";
 
 export default function CreateProductForm({
   onSuccess,
@@ -23,10 +22,22 @@ export default function CreateProductForm({
     setLoading(true);
 
     try {
-      await createAdminProduct({
-        ...form,
-        base_price_kes: Math.round(form.base_price_kes * 100),
+      const response = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...form,
+          base_price_kes: Math.round(form.base_price_kes * 100),
+        }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create product');
+      }
+
       showToast({ type: 'success', message: 'The product has been added.' });
       onSuccess(); // Refresh table or page
       setForm({ name: "", base_price_kes: 0, stock: 0, category_id: "" });

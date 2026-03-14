@@ -18,10 +18,15 @@ CREATE TRIGGER trg_profiles_updated_at
 
 -- Auto-create profile on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
-  INSERT INTO user_profiles (id, full_name)
-  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name');
+  INSERT INTO public.user_profiles (id, full_name, currency_pref, is_admin)
+  VALUES (
+    NEW.id,
+    NEW.raw_user_meta_data->>'full_name',
+    'KES',
+    false
+  );
   RETURN NEW;
 END;
 $$;

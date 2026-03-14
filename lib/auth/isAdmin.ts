@@ -16,12 +16,12 @@ export async function isAdmin(): Promise<boolean> {
   const adminSupabase = createAdminSupabase();
 
   const { data, error } = await adminSupabase
-    .from("profiles")
-    .select("role")
+    .from("user_profiles")
+    .select("is_admin")
     .eq("id", user.id)
     .single();
 
   logger.debug({ message: "[isAdmin] profile", data, error });
 
-  return data?.role === "admin";
+  return data?.is_admin === true;
 }

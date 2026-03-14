@@ -45,6 +45,9 @@ export class AppError extends Error {
       { service, cause: String(cause) },
     );
   }
+  static database(msg: string): AppError {
+    return new AppError(msg, 500, ErrorCode.DATABASE_ERROR);
+  }
  
   // ── Serialise for API responses (never expose stack in production) ───
   toResponse() {

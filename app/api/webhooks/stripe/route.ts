@@ -1,18 +1,20 @@
 // app/api/webhooks/stripe/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { orderService } from '@/services/order.service';
 import { createAdminSupabase } from '@/lib/supabase/admin';
 import { logger } from '@/logger';
- 
+
 // CRITICAL: disable body parsing — Stripe needs the raw body for signature verification
 export const dynamic = 'force-dynamic';
- 
+
 export async function POST(req: NextRequest) {
   const body      = await req.arrayBuffer();
   const rawBody   = Buffer.from(body);
   const signature = req.headers.get('stripe-signature') ?? '';
- 
+
+  const stripe = getStripe();
+
   let event;
   try {
     event = stripe.webhooks.constructEvent(

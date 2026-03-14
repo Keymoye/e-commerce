@@ -1,6 +1,6 @@
 // services/payment.service.ts
 import { createServerClient } from '@/lib/supabase/server';
-import { stripe } from '@/lib/stripe';
+import { getStripe } from '@/lib/stripe';
 import { initiateStkPush } from '@/lib/mpesa';
 import { AppError } from '@/errors/AppError';
 import { ErrorCode } from '@/errors/errorCodes';
@@ -8,12 +8,13 @@ import { withServiceError } from '@/errors/withErrorHandler';
 import { logger } from '@/logger';
  
 export const paymentService = {
- 
+
   // ── Stripe: create PaymentIntent ──────────────────────────────────────
   async createStripeIntent(orderId: string, userId: string, amountKes: number) {
     return withServiceError(async () => {
       const supabase = await createServerClient();
- 
+      const stripe = getStripe();
+
       // Create Stripe PaymentIntent
       const intent = await stripe.paymentIntents.create({
         amount:   amountKes,       // already in subunits (KES cents)

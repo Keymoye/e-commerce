@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Product } from "@/types/product";
 import { useUIStore } from '@/store/uiStore';
-import { updateAdminProduct } from "@/services/admin/product";
+import { useRouter } from "next/navigation";
 
 interface Props {
   product: Product;
@@ -11,6 +11,7 @@ interface Props {
 
 export default function ProductForm({ product }: Props) {
   const showToast = useUIStore((s) => s.showToast);
+  const router = useRouter();
   const [form, setForm] = useState({
     name: product.name,
     price: product.base_price_kes / 100,
@@ -24,12 +25,25 @@ export default function ProductForm({ product }: Props) {
     setLoading(true);
 
     try {
-      await updateAdminProduct({ 
-        ...form, 
-        id: product.id,
-        base_price_kes: Math.round(form.price * 100),
-        category_id: form.category,
+      const response = await fetch(`/api/admin/products/${product.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: product.id,
+          name: form.name,
+          base_price_kes: Math.round(form.price * 100),
+          stock: form.stock,
+          category_id: form.category,
+        }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update product');
+      }
+
       showToast({ type: 'success', message: 'Your changes have been saved.' });
     } catch (err: unknown) {
       showToast({ type: 'error', message: err instanceof Error ? err.message : 'Unknown error' });

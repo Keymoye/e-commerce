@@ -7,7 +7,8 @@ export const GET = withErrorHandler(async (req: NextRequest, ctx: any) => {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw AppError.unauthorized();
-  const id = ctx?.params?.id as string;
+  const params = await ctx?.params;
+  const id = params?.id as string;
   const { data } = await supabase
     .from("payments")
     .select("status")

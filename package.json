@@ -7,8 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest",
-    "test:run": "vitest --run",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:coverage": "vitest run --coverage",
+    "test:rls": "vitest run tests/integration/supabase/rls.test.ts",
+    "test:triggers": "vitest run tests/integration/supabase/triggers.test.ts",
     "analyze": "ANALYZE=true pnpm build",
     "db:types": "npx supabase gen types typescript --linked > types/supabase.types.ts"
   },
@@ -45,6 +50,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/supertest": "^7.2.0",
     "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "15.5.7",
@@ -52,10 +58,12 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "supabase": "^2.78.1",
+    "supertest": "^7.2.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^1.0.0"
+    "vitest": "^1.0.0",
+    "vitest-mock-extended": "^3.1.0"
   },
   "vitest": {
     "exclude": [
