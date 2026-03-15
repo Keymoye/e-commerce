@@ -1,14 +1,14 @@
 // tests/unit/services/order.service.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { orderService } from '@/services/order.service';
-import { AppError } from '@/errors/AppError';
+import { orderService } from '@/services/orders';
+import { AppError } from '@/errors/base-error';
  
 // ── Mock Supabase server client ───────────────────────────────────────
-vi.mock('@/lib/supabase/server', () => ({
+vi.mock('@/lib/db/server', () => ({
   createServerClient: vi.fn(),
 }));
  
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient } from '@/lib/db/server';
  
 const mockSupabase = {
   from: vi.fn(),
@@ -45,7 +45,7 @@ describe('orderService.createOrder', () => {
   it('throws validation error when product not found', async () => {
     mockSupabase.from.mockImplementation((table: string) => {
       if (table === 'products') {
-        const data = [];
+        const data: any[] = [];
         const chain = {
           select: vi.fn().mockReturnThis(),
           eq: vi.fn().mockReturnThis(),

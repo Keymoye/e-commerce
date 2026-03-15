@@ -4,11 +4,12 @@ import EditProductForm from "@/components/features/admin/edit-product-form";
 import { productSchema } from "@/services/admin/product-schemas";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditProductPage({ params }: Props) {
-  const product = await getAdminProductById(params.id);
+  const { id } = await params;
+  const product = await getAdminProductById(id);
 
   if (!product) return <p>Product not found</p>;
 

@@ -31,7 +31,7 @@ export default function AppProviders({
 
   return (
     <ToastProvider>
-      <AuthProvider initialUser={initialUser}>
+      <AuthProvider initialUser={initialUser ?? null}>
         <ErrorBoundary>{children}</ErrorBoundary>
       </AuthProvider>
       <ToastContainer />

@@ -1,9 +1,9 @@
 // tests/unit/services/payment.service.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { paymentService } from '@/services/payment.service'; 
+import { paymentService } from '@/services/payments'; 
  
 // Mock all external dependencies
-vi.mock('@/lib/supabase/server', () => ({ createServerClient: vi.fn() }));
+vi.mock('@/lib/db/server', () => ({ createServerClient: vi.fn() }));
 vi.mock('@/lib/stripe', () => ({
   getStripe: vi.fn(() => ({
     paymentIntents: {
@@ -21,9 +21,9 @@ vi.mock('@/lib/mpesa', () => ({
   }),
 }));
 
-import { getStripe } from '@/lib/stripe';
-import { initiateStkPush } from '@/lib/mpesa';
-import { createServerClient } from '@/lib/supabase/server'; 
+import { getStripe } from '@/lib/payments/stripe';
+import { initiateStkPush } from '@/lib/payments/mpesa';
+import { createServerClient } from '@/lib/db/server'; 
  
 const mockSupabase = { from: vi.fn() }; 
  

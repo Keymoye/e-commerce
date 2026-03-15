@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { auth } from '@/services/auth.service'; 
+import { auth } from '@/services/auth'; 
  
-vi.mock('@/lib/supabase/server', () => ({ createServerClient: vi.fn() }));
-import { createServerClient } from '@/lib/supabase/server'; 
+vi.mock('@/lib/db/server', () => ({ createServerClient: vi.fn() }));
+import { createServerClient } from '@/lib/db/server'; 
  
 const makeAuthMock = (overrides = {}) => ({
   auth: {

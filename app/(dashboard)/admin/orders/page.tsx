@@ -20,6 +20,7 @@ export default async function AdminOrdersPage({ searchParams }: Props) {
         orders={orders}
         currentPage={page}
         totalPages={totalPages}
+        onChange={(page) => { /* existing handler */ }}
       />
     </section>
   );

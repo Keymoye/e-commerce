@@ -39,7 +39,7 @@ export default function ProductsTable({ products, pagination, onPageChange }: {
           </tbody>
         </table>
       </div>
-      <Pagination page={pagination.page} totalPages={pagination.totalPages} onChange={onPageChange} />
+      <Pagination current={pagination.page} total={pagination.totalPages} onChange={onPageChange} />
     </div>
   );
 }

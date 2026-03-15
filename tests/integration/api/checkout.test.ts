@@ -1,7 +1,7 @@
 // tests/integration/api/checkout.test.ts
 import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { NextRequest } from 'next/server';
-import { POST } from '@/app/api/checkout/route';
+import { POST } from '@/app/api/payments/checkout/route';
 import { testAdmin, cleanDatabase, seedTestProducts, createTestUser } from '../../setup'; 
  
 // Mock Stripe and M-Pesa so no real API calls are made
@@ -15,15 +15,15 @@ vi.mock('@/lib/mpesa', () => ({
 }));
  
 // Mock auth to return a real test user
-vi.mock('@/lib/supabase/server', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/supabase/server')>();
+vi.mock('@/lib/db/server', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/db/server')>();
   return {
     ...actual,
     createServerClient: vi.fn(),
   };
 });
  
-import { createServerClient } from '@/lib/supabase/server'; 
+import { createServerClient } from '@/lib/db/server'; 
  
 let testUser: Awaited<ReturnType<typeof createTestUser>>;
 let productId: string; 

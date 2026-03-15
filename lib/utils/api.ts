@@ -1,4 +1,4 @@
-import { AppError } from '@/errors/AppError';
+import { AppError } from '@/errors/base-error';
 
 export async function fetchJson(input: RequestInfo, init?: RequestInit) {
   const res = await fetch(input, init);

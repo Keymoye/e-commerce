@@ -1,4 +1,4 @@
-import { ErrorCode } from '@/errors/errorCodes';
+import { ErrorCode } from '@/errors/error-codes';
  
 // Success response
 export type ApiSuccess<T> = {

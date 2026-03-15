@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 interface Props {
   current: number;
   total: number;
+  onChange: (page: number) => void;
 }
 
-export default function Pagination({ current, total }: Props) {
+export default function Pagination({ current, total, onChange }: Props) {
   const router = useRouter();
 
   if (total <= 1) return null;

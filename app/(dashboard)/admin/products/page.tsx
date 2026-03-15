@@ -18,8 +18,8 @@ export default async function AdminProductsPage({ searchParams }: Props) {
 
       <ProductsTable
         products={products}
-        currentPage={page}
-        totalPages={totalPages}
+        pagination={{ page, totalPages }}
+        onPageChange={(page) => { /* existing handler */ }}
       />
     </section>
   );

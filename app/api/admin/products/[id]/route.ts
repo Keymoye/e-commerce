@@ -13,8 +13,9 @@ const updateProductSchema = z.object({
   category_id: z.string().min(1, 'Category is required'),
 });
 
-export const GET = withErrorHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
-  logger.info({ message: 'Admin get product request', productId: params.id });
+export const GET = withErrorHandler(async (req: NextRequest, ctx: any) => {
+  const { id } = ctx.params as { id: string };
+  logger.info({ message: 'Admin get product request', productId: id });
 
   // Check admin permissions
   const admin = await isAdmin();
@@ -23,19 +24,20 @@ export const GET = withErrorHandler(async (req: NextRequest, { params }: { param
   }
 
   const adminProductService = createAdminProductService();
-  const product = await adminProductService.getProductById(params.id);
+  const product = await adminProductService.getProductById(id);
 
   if (!product) {
     throw AppError.notFound('Product not found');
   }
 
-  logger.info({ message: 'Admin get product success', productId: params.id });
+  logger.info({ message: 'Admin get product success', productId: id });
 
   return NextResponse.json(product);
 });
 
-export const PUT = withErrorHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
-  logger.info({ message: 'Admin update product request', productId: params.id });
+export const PUT = withErrorHandler(async (req: NextRequest, ctx: any) => {
+  const { id } = ctx.params as { id: string };
+  logger.info({ message: 'Admin update product request', productId: id });
 
   // Check admin permissions
   const admin = await isAdmin();
@@ -47,15 +49,16 @@ export const PUT = withErrorHandler(async (req: NextRequest, { params }: { param
   const validatedData = updateProductSchema.parse(body);
 
   const adminProductService = createAdminProductService();
-  const product = await adminProductService.updateProduct(params.id, { ...validatedData, id: params.id });
+  const product = await adminProductService.updateProduct(id, { ...validatedData, id });
 
-  logger.info({ message: 'Admin update product success', productId: params.id });
+  logger.info({ message: 'Admin update product success', productId: id });
 
   return NextResponse.json(product);
 });
 
-export const DELETE = withErrorHandler(async (req: NextRequest, { params }: { params: { id: string } }) => {
-  logger.info({ message: 'Admin delete product request', productId: params.id });
+export const DELETE = withErrorHandler(async (req: NextRequest, ctx: any) => {
+  const { id } = ctx.params as { id: string };
+  logger.info({ message: 'Admin delete product request', productId: id });
 
   // Check admin permissions
   const admin = await isAdmin();
@@ -64,9 +67,9 @@ export const DELETE = withErrorHandler(async (req: NextRequest, { params }: { pa
   }
 
   const adminProductService = createAdminProductService();
-  await adminProductService.deleteProduct(params.id);
+  await adminProductService.deleteProduct(id);
 
-  logger.info({ message: 'Admin delete product success', productId: params.id });
+  logger.info({ message: 'Admin delete product success', productId: id });
 
   return NextResponse.json({ success: true });
 });

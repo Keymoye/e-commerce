@@ -1,7 +1,7 @@
 // tests/integration/supabase/rls.test.ts
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/supabase.types';
+import type { Database } from '@/types/database';
 import { testAdmin, cleanDatabase, seedTestProducts, createTestUser, signInAsUser } from '../../setup'; 
  
 let userA: Awaited<ReturnType<typeof createTestUser>>;

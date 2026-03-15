@@ -22,7 +22,7 @@ export default function ProductDetailClient({
   const { handleToggle, isWishlisted } = useWishlist(product);
   const showToast = useUIStore((s) => s.showToast);
 
-  const inWishlist = isWishlisted(product.id);
+  const inWishlist = isWishlisted;
 
   const handleAddToCart = () => {
     handleAdd(product, 1);

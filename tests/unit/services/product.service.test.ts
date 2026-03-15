@@ -1,9 +1,9 @@
 // tests/unit/services/product.service.test.ts
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { productService } from '@/services/product.service'; 
+import { productService } from '@/services/products'; 
  
-vi.mock('@/lib/supabase/server', () => ({ createServerClient: vi.fn() }));
-import { createServerClient } from '@/lib/supabase/server'; 
+vi.mock('@/lib/db/server', () => ({ createServerClient: vi.fn() }));
+import { createServerClient } from '@/lib/db/server'; 
  
 const mockProducts = [
   { id: 'p1', name: 'Phone', slug: 'phone', base_price_kes: 100000, is_active: true, stock: 5 },
