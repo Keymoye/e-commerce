@@ -1,9 +1,9 @@
 // app/api/webhooks/stripe/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getStripe } from '@/lib/stripe';
-import { orderService } from '@/services/order.service';
-import { createAdminSupabase } from '@/lib/supabase/admin';
-import { logger } from '@/logger';
+import { getStripe } from '@/lib/payments/stripe';
+import { orderService } from '@/services/orders';
+import { createAdminSupabase } from '@/lib/db/admin';
+import { logger } from '@/lib/logger';
 
 // CRITICAL: disable body parsing — Stripe needs the raw body for signature verification
 export const dynamic = 'force-dynamic';

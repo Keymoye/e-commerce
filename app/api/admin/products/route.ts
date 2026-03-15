@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withErrorHandler } from '@/errors/withErrorHandler';
-import { AppError } from '@/errors/AppError';
-import { logger } from '@/logger';
+import { withErrorHandler } from '@/errors/error-handler';
+import { AppError } from '@/errors/base-error';
+import { logger } from '@/lib/logger';
 import { z } from 'zod';
 import { isAdmin } from '@/lib/auth/isAdmin';
-import { createAdminProductService } from '@/services/admin/product';
+import { createAdminProductService } from '@/services/admin/products';
 
 const createProductSchema = z.object({
   name: z.string().min(1, 'Name is required'),

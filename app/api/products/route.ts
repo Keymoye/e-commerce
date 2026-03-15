@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { withErrorHandler } from '@/errors/withErrorHandler';
+import { withErrorHandler } from '@/errors/error-handler';
 import { z } from 'zod';
-import { AppError } from '@/errors/AppError';
-import { productService } from '@/services/product.service';
+import { AppError } from '@/errors/base-error';
+import { productService } from '@/services/products';
 
 // ── Validation schema (Zod) ────────────────────────────────────────────
 const querySchema = z.object({

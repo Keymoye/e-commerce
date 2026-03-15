@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { withErrorHandler } from '@/errors/withErrorHandler';
+import { withErrorHandler } from '@/errors/error-handler';
 
 export const GET = withErrorHandler(async () => {
   return NextResponse.json({

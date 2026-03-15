@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withErrorHandler } from "@/errors/withErrorHandler";
-import { AppError } from "@/errors/AppError";
-import { createServerClient } from "@/lib/supabase/server";
+import { withErrorHandler } from "@/errors/error-handler";
+import { AppError } from "@/errors/base-error";
+import { createServerClient } from "@/lib/db/server";
  
 export const GET = withErrorHandler(async (req: NextRequest, ctx: any) => {
   const supabase = await createServerClient();

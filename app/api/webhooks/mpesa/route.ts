@@ -1,8 +1,8 @@
 // app/api/webhooks/mpesa/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { orderService } from '@/services/order.service';
-import { createAdminSupabase } from '@/lib/supabase/admin';
-import { logger } from '@/logger';
+import { orderService } from '@/services/orders';
+import { createAdminSupabase } from '@/lib/db/admin';
+import { logger } from '@/lib/logger';
  
 export async function POST(req: NextRequest) {
   let body;
