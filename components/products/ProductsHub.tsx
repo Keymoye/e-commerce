@@ -7,7 +7,7 @@ import ProductSkeleton from "@/components/ui/productSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/navigation";
-import { usePaginatedProducts } from "@/hooks/useProducts";
+import { usePaginatedProducts, useCategories } from "@/hooks/useProducts";
 import { useSearchParams } from "next/navigation";
 
 const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
@@ -67,6 +67,7 @@ function FullProducts({
   const debouncedSearch = useDebounce(searchQuery, 400);
   const searchParams = useSearchParams();
   const categoryFromUrl = searchParams.get("category");
+  const { categories } = useCategories();
 
   const [category, setCategory] = useState(categoryFromUrl ?? "all");
 
@@ -80,9 +81,6 @@ function FullProducts({
 
   useEffect(() => setPage(1), [category, sortBy, debouncedSearch]);
   const showing = products?.length ?? 0;
-  useEffect(() => {
-    console.log("Category:", category);
-  }, [category]);
 
   useEffect(() => {
     if (categoryFromUrl && categoryFromUrl !== category) {
@@ -126,9 +124,9 @@ function FullProducts({
             className="w-full px-3 py-2 rounded-lg border border-foreground/20 bg-background focus:ring-2 focus:ring-accent outline-none"
           >
             <option value="all">All</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Cosmetics">Cosmetics</option>
-            <option value="Electronics">Electronics</option>
+            {categories.map((cat) => (
+              <option key={cat.name} value={cat.name}>{cat.name}</option>
+            ))}
           </select>
         </div>
         <div>

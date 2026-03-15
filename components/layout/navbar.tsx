@@ -13,7 +13,6 @@ export default function NavBar() {
   const { user, loading } = useAuth();
 
   const navLinks = [
-    { href: "/categories", label: "Categories" },
     { href: "/wishlist", label: "Wishlist" },
     { href: "/admin", label: "admin" },
   ];

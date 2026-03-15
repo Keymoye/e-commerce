@@ -35,19 +35,6 @@ export function productMetadata(product: Product): Metadata {
   };
 }
 
-export function categoriesMetadata(): Metadata {
-  return {
-    title: "Shop by Category | Keystore",
-    description: "Browse products by category. Find exactly what you need.",
-    keywords: ["categories", "shop", "products"],
-    openGraph: {
-      type: "website",
-      title: "Shop by Category | Keystore",
-      description: "Browse products by category.",
-    },
-  };
-}
-
 export function homeMetadata(): Metadata {
   return {
     title: "Keystore - Premium Health & Wellness Products",
