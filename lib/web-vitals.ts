@@ -1,7 +1,7 @@
 // Web Vitals monitoring for Core Web Vitals (LCP, CLS, FID)
 // Reference: https://web.dev/vitals/
 
-import { logger } from '@/logger';
+import { logger } from '@/lib/logger';
 
 export type MetricValue = {
   name: string;

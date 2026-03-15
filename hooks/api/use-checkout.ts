@@ -1,10 +1,10 @@
 // hooks/useCheckout.ts
 'use client';
 import { useState } from 'react';
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/store/ui-store';
 import { useErrorHandler } from '@/hooks/shared/use-error-handler';
-import { isApiError } from '@/types/api.types';
-import { CartStore } from '@/store/cartStore';
+import { isApiError } from '@/types/api';
+import { CartStore } from '@/store/cart-store';
  
 export type PaymentMethod = 'stripe' | 'mpesa';
  

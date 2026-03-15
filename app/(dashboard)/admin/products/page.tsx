@@ -1,4 +1,4 @@
-import { getAdminProducts } from "@/services/admin/product";
+import { getAdminProducts } from "@/services/admin/products";
 import ProductsTable from "@/components/features/admin/products-table";
 
 interface Props {

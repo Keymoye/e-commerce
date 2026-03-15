@@ -2,8 +2,8 @@
 "use client";
 
 import { useCallback } from "react";
-import { CartStore } from "@/store/cartStore";
-import { useUIStore } from '@/store/uiStore';
+import { CartStore } from "@/store/cart-store";
+import { useUIStore } from '@/store/ui-store';
 import { Product } from "@/types/product";
 
 export function useCart() {

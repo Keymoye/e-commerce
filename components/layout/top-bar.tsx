@@ -1,6 +1,6 @@
 "use client";
 import { FiLogOut } from "react-icons/fi";
-import { useLogout } from "@/hooks/auth/useLogout";
+import { useLogout } from "@/hooks/api/use-auth";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 

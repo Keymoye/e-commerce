@@ -1,6 +1,6 @@
 "use client";
 
-import Pagination from "../products/Pagination";
+import Pagination from "./admin-pagination";
 
 interface Order {
   id: string;

@@ -1,8 +1,8 @@
 "use client";
 
 import type { Product } from "@/types/product";
-import ProductsRow from "./ProductsRow";
-import Pagination from "./Pagination";
+import ProductsRow from "./products-row";
+import Pagination from "./admin-pagination";
 
 export default function ProductsTable({ products, pagination, onPageChange }: {
   products: Product[];

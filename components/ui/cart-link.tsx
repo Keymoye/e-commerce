@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CartStore } from "@/store/cartStore";
+import { CartStore } from "@/store/cart-store";
 import { FaShoppingCart } from "react-icons/fa";
 import { motion } from "framer-motion";
 

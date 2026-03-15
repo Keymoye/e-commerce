@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useUIStore } from '@/store/uiStore';
-import { CartStore } from '@/store/cartStore';
+import { useUIStore } from '@/store/ui-store';
+import { CartStore } from '@/store/cart-store';
 import { useRouter } from 'next/navigation';
  
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);

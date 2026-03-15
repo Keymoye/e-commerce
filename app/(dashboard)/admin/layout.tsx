@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { isAdmin } from "@/lib/auth/isAdmin";
+import { isAdmin } from "@/lib/auth/permissions";
 import Sidebar from "@/components/layout/sidebar";
 import TopBar from "@/components/layout/top-bar";
 import { redirect } from "next/dist/client/components/navigation";

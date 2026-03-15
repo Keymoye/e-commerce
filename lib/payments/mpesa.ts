@@ -1,8 +1,8 @@
 // lib/mpesa.ts
 import 'server-only';
-import { AppError } from '@/errors/AppError';
-import { ErrorCode } from '@/errors/errorCodes';
-import { logger } from '@/logger';
+import { AppError } from '@/errors/base-error';
+import { ErrorCode } from '@/errors/error-codes';
+import { logger } from '@/lib/logger';
  
 const BASE_URL = process.env.MPESA_ENVIRONMENT === 'production'
   ? 'https://api.safaricom.co.ke'

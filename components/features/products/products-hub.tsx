@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import type { Product } from "@/types/product";
 import dynamic from "next/dynamic";
-import ProductSkeleton from "@/components/ui/productSkeleton";
-import Pagination from "@/components/ui/Pagination";
-import { useDebounce } from "@/hooks/useDebounce";
+import ProductSkeleton from "@/components/ui/product-skeleton";
+import { Pagination} from "@/components/ui/pagination";
+import { useDebounce } from "@/hooks/shared/use-debounce";
 import { useRouter } from "next/navigation";
-import { usePaginatedProducts, useCategories } from "@/hooks/useProducts";
+import { usePaginatedProducts, useCategories } from "@/hooks/api/use-products";
 import { useSearchParams } from "next/navigation";
 
-const ProductCard = dynamic(() => import("@/components/ui/productCard"), {
+const ProductCard = dynamic(() => import("@/components/ui/product-card"), {
   loading: () => <div />,
 });
 

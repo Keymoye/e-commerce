@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useRegister } from "@/hooks/auth/useRegister";
+import { useRegister } from "@/hooks/api/use-auth";
 
 export default function RegisterPage() {
   const { onSubmit, loading } = useRegister();

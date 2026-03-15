@@ -1,7 +1,7 @@
 // lib/auth/isAdmin.ts
-import { getUser } from "../supabase/getUser";
-import { createAdminSupabase } from "../supabase/admin";
-import { logger } from '@/logger';
+import { getUser } from "../db/get-user";
+import { createAdminSupabase } from "../db/admin";
+import { logger } from '@/lib/logger';
 
 export async function isAdmin(): Promise<boolean> {
   const user = await getUser();

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
-import { logger } from '@/logger';
+import { logger } from '@/lib/logger';
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

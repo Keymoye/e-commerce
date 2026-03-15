@@ -1,9 +1,9 @@
 // hooks/useWishlist.ts
 "use client";
 
-import { WishlistStore } from "@/store/wishlistStore";
+import { WishlistStore } from "@/store/wishlist-store";
 import { Product } from "@/types/product";
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/store/ui-store';
 
 export function useWishlist(product?: Product) {
   const items = WishlistStore((s) => s.items);

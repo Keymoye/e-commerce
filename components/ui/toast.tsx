@@ -1,5 +1,5 @@
 'use client';
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/store/ui-store';
 import { FiX, FiCheckCircle, FiAlertCircle, FiInfo, FiAlertTriangle } from 'react-icons/fi';
 
 // ── Keep useToast for backwards compatibility with existing components ──

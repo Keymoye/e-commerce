@@ -1,6 +1,6 @@
 import type { User } from "@supabase/supabase-js";
-import { createServerClient } from "@/lib/supabase/server";
-import { logger } from '@/logger';
+import { createServerClient } from "@/lib/db/server";
+import { logger } from '@/lib/logger';
 
 export async function getUser(): Promise<User | null> {
   try {

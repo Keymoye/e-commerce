@@ -1,7 +1,7 @@
 // app/admin/products/[id]/page.tsx
-import { getAdminProductById } from "@/services/admin/product";
+import { getAdminProductById } from "@/services/admin/products";
 import EditProductForm from "@/components/features/admin/edit-product-form";
-import { productSchema } from "@/services/admin/product.schemas";
+import { productSchema } from "@/services/admin/product-schemas";
 
 interface Props {
   params: { id: string };

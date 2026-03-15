@@ -3,7 +3,7 @@ import { withErrorHandler } from '@/errors/error-handler';
 import { AppError } from '@/errors/base-error';
 import { logger } from '@/lib/logger';
 import { z } from 'zod';
-import { isAdmin } from '@/lib/auth/isAdmin';
+import { isAdmin } from '@/lib/auth/permissions';
 import { createAdminProductService } from '@/services/admin/products';
 
 const createProductSchema = z.object({

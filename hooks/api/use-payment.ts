@@ -1,7 +1,7 @@
 // hooks/usePayment.ts
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { isApiError } from '@/types/api.types';
+import { isApiError } from '@/types/api';
  
 type PaymentStatus = 'pending' | 'completed' | 'failed' | 'cancelled';
  

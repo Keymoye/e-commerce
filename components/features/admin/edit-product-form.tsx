@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { z } from "zod";
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/store/ui-store';
 import { useRouter } from "next/navigation";
-import { productSchema } from "@/services/admin/product.schemas";
+import { productSchema } from "@/services/admin/product-schemas";
 
 interface Props {
   initialData: z.infer<typeof productSchema>;

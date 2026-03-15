@@ -1,4 +1,4 @@
-import { homeMetadata } from "@/lib/seo";
+import { homeMetadata } from "@/lib/utils/seo";
 import HomePageClient from "./home/client";
 
 export const metadata = homeMetadata();

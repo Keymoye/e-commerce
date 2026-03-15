@@ -1,7 +1,7 @@
 // services/admin/metrics.ts
-import { createServerClient } from '@/lib/supabase/server';
-import { AppError } from '@/errors/AppError';
-import { logger } from '@/logger';
+import { createServerClient } from '@/lib/db/server';
+import { AppError } from '@/errors/base-error';
+import { logger } from '@/lib/logger';
 
 export const adminMetricsService = {
   async getDashboardMetrics() {

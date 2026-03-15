@@ -5,8 +5,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiMenu, FiX } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
-import CartLink from "@/components/ui/cartLink";
-import { useAuth } from "@/components/auth/AuthProvider";
+import CartLink from "@/components/ui/cart-link";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);

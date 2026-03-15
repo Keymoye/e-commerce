@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Product } from "@/types/product";
 import { useRouter } from "next/navigation";
-import { useUIStore } from '@/store/uiStore';
+import { useUIStore } from '@/store/ui-store';
 
 export default function ProductsRow({
   product,

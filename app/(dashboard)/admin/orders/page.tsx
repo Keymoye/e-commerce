@@ -1,4 +1,4 @@
-import { getAdminOrders } from "@/services/admin/order";
+import { getAdminOrders } from "@/services/admin/orders";
 import OrdersTable from "@/components/features/admin/orders-table";
 
 interface Props {

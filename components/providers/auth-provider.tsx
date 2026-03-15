@@ -9,8 +9,8 @@ import {
   useRef,
 } from "react";
 import type { User } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase/client";
-import { logger } from '@/logger';
+import { supabase } from "@/lib/db/client";
+import { logger } from '@/lib/logger';
 
 interface AuthContextType {
   user: User | null;

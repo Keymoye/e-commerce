@@ -1,4 +1,4 @@
-import ProductsHub from "@/components/products/ProductsHub";
+import ProductsHub from "@/components/features/products/products-hub";
 
 export default function HomePage() {
   return (

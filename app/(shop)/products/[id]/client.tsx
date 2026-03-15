@@ -9,7 +9,7 @@ import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import StarRating from "@/components/ui/star-rating";
 import { useUIStore } from '@/store/ui-store';
 import { useEffect } from "react";
-import { productJsonLd } from "@/lib/seo";
+import { productJsonLd } from "@/lib/utils/seo";
 
 interface ProductDetailClientProps {
   product: Product;

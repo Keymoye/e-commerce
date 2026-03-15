@@ -6,9 +6,9 @@ import { memo } from "react";
 import { Product } from "@/types/product";
 import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
-import StarRating from "@/components/ui/StarRating";
-import CartButton from "@/components/ui/CartButton";
-import { useWishlist } from "@/hooks/wishlist/useWishlist";
+import StarRating from "@/components/ui/star-rating";
+import CartButton from "@/components/ui/cart-button";
+import { useWishlist } from "@/hooks/api/use-wishlist";
 
 interface ProductCardProps {
   product: Product;

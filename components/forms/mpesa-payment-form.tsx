@@ -1,8 +1,8 @@
 // components/checkout/MpesaPaymentForm.tsx
 'use client';
-import { usePaymentStatus } from '@/hooks/usePayment';
-import { useUIStore } from '@/store/uiStore';
-import { CartStore } from '@/store/cartStore';
+import { usePaymentStatus } from '@/hooks/api/use-payment';
+import { useUIStore } from '@/store/ui-store';
+import { CartStore } from '@/store/cart-store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
  

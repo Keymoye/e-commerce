@@ -3,10 +3,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useCheckout } from '@/hooks/useCheckout';
-import { useUIStore } from '@/store/uiStore';
-import { StripePaymentForm } from './StripePaymentForm';
-import { MpesaPaymentForm } from './MpesaPaymentForm';
+import { useCheckout } from '@/hooks/api/use-checkout';
+import { useUIStore } from '@/store/ui-store';
+import { StripePaymentForm } from './stripe-payment-form';
+import { MpesaPaymentForm } from './mpesa-payment-form';
  
 const schema = z.object({
   name:       z.string().min(2),

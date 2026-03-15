@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { useLogin } from "@/hooks/auth/useLogin";
-import { useOAuthLogin } from "@/hooks/auth/useAuthLogin";
+import { useLogin } from "@/hooks/api/use-auth";
+import { useOAuthLogin } from "@/hooks/api/use-auth";
 
 export default function LoginPage() {
   const { login, loading: loginLoading } = useLogin();

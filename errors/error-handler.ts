@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AppError } from './AppError';
-import { ErrorCode } from './errorCodes';
-import { logger } from '@/logger';
+import { AppError } from './base-error';
+import { ErrorCode } from './error-codes';
+import { logger } from '@/lib/logger';
  
 type ApiHandler = (req: NextRequest, ctx?: unknown) => Promise<NextResponse>;
  

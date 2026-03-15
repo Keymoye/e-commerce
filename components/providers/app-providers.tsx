@@ -2,8 +2,8 @@
 
 import React, { useEffect } from "react";
 import { ToastProvider } from "@/components/ui/toast";
-import { AuthProvider } from "@/components/auth/AuthProvider";
-import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { AuthProvider } from "@/components/providers/auth-provider";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { ToastContainer } from '@/components/ui/toast';
 import { initWebVitals, initPerformanceObserver } from "@/lib/web-vitals";
 import type { User } from "@supabase/supabase-js";

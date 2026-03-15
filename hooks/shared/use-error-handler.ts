@@ -1,8 +1,8 @@
 'use client';
 import { useCallback } from 'react';
-import { useUIStore } from '@/store/uiStore';
-import { isApiError } from '@/types/api.types';
-import { ErrorCode } from '@/errors/errorCodes';
+import { useUIStore } from '@/store/ui-store';
+import { isApiError } from '@/types/api';
+import { ErrorCode } from '@/errors/error-codes';
  
 // Maps server error codes to user-friendly messages
 const ERROR_MESSAGES: Partial<Record<ErrorCode, string>> = {

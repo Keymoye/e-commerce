@@ -54,3 +54,6 @@ export const productService = {
 
   // ... more methods follow the same pattern
 };
+
+// Export standalone functions for convenience
+export const getProductById = productService.getProductById.bind(productService);

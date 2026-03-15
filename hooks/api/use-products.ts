@@ -1,8 +1,8 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { useErrorHandler } from '@/hooks/shared/use-error-handler';
-import { useUIStore } from '@/store/uiStore';
-import { isApiError } from '@/types/api.types';
+import { useUIStore } from '@/store/ui-store';
+import { isApiError } from '@/types/api';
 import type { Product, CategoryStats } from '@/types/product';
 
 interface UseProductsOptions {

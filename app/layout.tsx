@@ -1,9 +1,10 @@
+import '@/lib/env';
 import type { Metadata } from "next";
 import "./globals.css";
 import NavBar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import AppProviders from "@/components/layout/AppProviders";
-import { getUser } from "@/lib/supabase/getUser";
+import AppProviders from "@/components/providers/app-providers";
+import { getUser } from "@/lib/db/get-user";
 import type { User } from "@supabase/supabase-js";
 import { Analytics } from "@vercel/analytics/react";
 
