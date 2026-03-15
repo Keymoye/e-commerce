@@ -1,0 +1,26 @@
+import { getAdminProducts } from "@/services/admin/product";
+import ProductsTable from "@/components/features/admin/products-table";
+
+interface Props {
+  searchParams: Promise<{ page?: string }>;
+}
+
+export default async function AdminProductsPage({ searchParams }: Props) {
+  const resolvedParams = await searchParams;
+  const page = Number(resolvedParams.page ?? 1);
+  const pageSize = 10;
+
+  const { products, totalPages } = await getAdminProducts(page, pageSize);
+
+  return (
+    <section>
+      <h2 className="text-2xl font-semibold mb-6">Products</h2>
+
+      <ProductsTable
+        products={products}
+        currentPage={page}
+        totalPages={totalPages}
+      />
+    </section>
+  );
+}

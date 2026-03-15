@@ -7,4 +7,4 @@ export { ProductCard } from './product-card';
 export { CartButton } from './cart-button';
 export { CartLink } from './cart-link';
 export { StarRating } from './star-rating';
-export { Toast } from './toast';
+export { ToastContainer } from './toast';
