@@ -2,8 +2,8 @@
 
 import type { Product } from "@/types/product";
 import Image from "next/image";
-import { CartStore } from "@/store/cartStore";
-import { WishlistStore } from "@/store/wishlistStore";
+import { useCart } from '@/hooks/api/use-cart';
+import { useWishlist } from '@/hooks/api/use-wishlist';
 import { motion } from "framer-motion";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import StarRating from "@/components/ui/StarRating";
@@ -18,19 +18,19 @@ interface ProductDetailClientProps {
 export default function ProductDetailClient({
   product,
 }: ProductDetailClientProps) {
-  const { addItem: addToCart } = CartStore();
-  const { toggleWishlist, isWishlisted } = WishlistStore();
+  const { handleAdd } = useCart();
+  const { handleToggle, isWishlisted } = useWishlist(product);
   const showToast = useUIStore((s) => s.showToast);
 
   const inWishlist = isWishlisted(product.id);
 
   const handleAddToCart = () => {
-    addToCart(product, 1);
+    handleAdd(product, 1);
     showToast({ type: 'success', message: `${product.name} has been added to your cart.` });
   };
 
   const handleWishlist = () => {
-    toggleWishlist(product);
+    handleToggle();
     showToast({
       type: inWishlist ? 'info' : 'success',
       message: inWishlist
