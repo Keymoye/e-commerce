@@ -10,6 +10,7 @@ const querySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
   category: z.string().optional(),
   q:        z.string().max(200).optional(),
+  sortBy:   z.string().optional(),
 });
 
 // ── GET /api/products ─────────────────────────────────────────────────

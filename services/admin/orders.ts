@@ -16,7 +16,7 @@ export const adminOrderService = {
       .from("orders")
       .select(`
         *,
-        user_profiles!inner (
+        user_profiles!user_id (
           email
         )
       `, { count: "exact" })

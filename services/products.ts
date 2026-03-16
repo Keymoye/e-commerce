@@ -7,19 +7,35 @@ import type { Product } from '@/types/product';
 
 // ── Type for list result ──────────────────────────────────────────
 type ListProductsResult = { products: Product[]; total: number };
-type ListProductsParams = { page: number; pageSize: number; category?: string; q?: string };
+type ListProductsParams = { page: number; pageSize: number; category?: string; q?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' };
 
 export const productService = {
 
   async listProducts(params: ListProductsParams): Promise<ListProductsResult> {
     return withServiceError(async () => {
       const supabase = await createServerClient();
-      const { page, pageSize, category, q } = params;
+      const { page, pageSize, category, q, sortBy, sortOrder } = params;
       const from = (page - 1) * pageSize;
+      
+      // Map UI sort values to database columns
+      const sortMap: Record<string, { column: string; ascending: boolean }> = {
+        'newest':     { column: 'created_at',    ascending: false },
+        'oldest':     { column: 'created_at',    ascending: true  },
+        'price-asc':  { column: 'base_price_kes', ascending: true  },
+        'price-desc': { column: 'base_price_kes', ascending: false },
+        'name':       { column: 'name',           ascending: true  },
+        'rating':     { column: 'rating',         ascending: false },
+        // Keep column name fallbacks for direct column access:
+        'created_at':    { column: 'created_at',    ascending: false },
+        'base_price_kes': { column: 'base_price_kes', ascending: true },
+      };
+
+      const sort = sortMap[sortBy ?? 'newest'] ?? sortMap['newest'];
 
       let query = supabase
         .from('products')
         .select('*', { count: 'exact' })
+        .order(sort.column, { ascending: sort.ascending })
         .range(from, from + pageSize - 1);
 
       if (category) query = query.eq('category', category);

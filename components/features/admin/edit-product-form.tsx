@@ -83,7 +83,7 @@ export default function EditProductForm({ initialData }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-md">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
           Name
         </label>
         <input
@@ -91,18 +91,18 @@ export default function EditProductForm({ initialData }: Props) {
           type="text"
           value={form.name}
           onChange={(e) => handleChange("name", e.target.value)}
-          className={`w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.name ? 'border-destructive' : ''
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            errors.name ? 'border-red-500' : ''
           }`}
           placeholder="Enter product name"
         />
         {errors.name && (
-          <p className="mt-1 text-sm text-destructive">{errors.name}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.name}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="price" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
           Price (KES)
         </label>
         <input
@@ -112,18 +112,18 @@ export default function EditProductForm({ initialData }: Props) {
           min="0"
           value={form.base_price_kes / 100}
           onChange={(e) => handleChange("base_price_kes", Math.round(parseFloat(e.target.value) * 100))}
-          className={`w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.base_price_kes ? 'border-destructive' : ''
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            errors.base_price_kes ? 'border-red-500' : ''
           }`}
           placeholder="0.00"
         />
         {errors.base_price_kes && (
-          <p className="mt-1 text-sm text-destructive">{errors.base_price_kes}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.base_price_kes}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="stock" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
           Stock
         </label>
         <input
@@ -132,18 +132,18 @@ export default function EditProductForm({ initialData }: Props) {
           min="0"
           value={form.stock}
           onChange={(e) => handleChange("stock", parseInt(e.target.value) || 0)}
-          className={`w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.stock ? 'border-destructive' : ''
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            errors.stock ? 'border-red-500' : ''
           }`}
           placeholder="0"
         />
         {errors.stock && (
-          <p className="mt-1 text-sm text-destructive">{errors.stock}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.stock}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
+        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
           Category ID
         </label>
         <input
@@ -151,13 +151,13 @@ export default function EditProductForm({ initialData }: Props) {
           type="text"
           value={form.category_id}
           onChange={(e) => handleChange("category_id", e.target.value)}
-          className={`w-full px-3 py-2 border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
-            errors.category_id ? 'border-destructive' : ''
+          className={`w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+            errors.category_id ? 'border-red-500' : ''
           }`}
           placeholder="Enter category ID"
         />
         {errors.category_id && (
-          <p className="mt-1 text-sm text-destructive">{errors.category_id}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.category_id}</p>
         )}
       </div>
 

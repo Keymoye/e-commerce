@@ -17,7 +17,6 @@ interface Props {
   orders: Order[];
   currentPage: number;
   totalPages: number;
-  onChange: (page: number) => void;
   loading?: boolean;
   error?: string | null;
 }
@@ -26,7 +25,6 @@ export default function OrdersTable({
   orders,
   currentPage,
   totalPages,
-  onChange,
   loading = false,
   error = null,
 }: Props) {
@@ -153,7 +151,7 @@ export default function OrdersTable({
         </table>
       </div>
 
-      <Pagination current={currentPage} total={totalPages} onChange={onChange} />
+      <Pagination current={currentPage} total={totalPages} />
     </div>
   );
 }

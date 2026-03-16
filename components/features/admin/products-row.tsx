@@ -37,7 +37,7 @@ export default function ProductsRow({
   };
 
   return (
-    <>
+    <tr className="hover:bg-gray-50">
       <td className="p-3 font-medium text-gray-900">{product.name}</td>
       <td className="p-3 text-center text-gray-500">{product.category?.name || 'Uncategorized'}</td>
       <td className="p-3 text-center text-gray-900">${(product.base_price_kes / 100).toFixed(2)}</td>
@@ -64,6 +64,6 @@ export default function ProductsRow({
           Delete
         </button>
       </td>
-    </>
+    </tr>
   );
 }

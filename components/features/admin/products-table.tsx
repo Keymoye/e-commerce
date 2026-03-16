@@ -4,10 +4,9 @@ import type { Product } from "@/types/product";
 import ProductsRow from "./products-row";
 import Pagination from "./admin-pagination";
 
-export default function ProductsTable({ products, pagination, onPageChange }: {
+export default function ProductsTable({ products, pagination }: {
   products: Product[];
   pagination: { page: number; totalPages: number };
-  onPageChange: (page: number) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -39,7 +38,7 @@ export default function ProductsTable({ products, pagination, onPageChange }: {
           </tbody>
         </table>
       </div>
-      <Pagination current={pagination.page} total={pagination.totalPages} onChange={onPageChange} />
+      <Pagination current={pagination.page} total={pagination.totalPages} />
     </div>
   );
 }
