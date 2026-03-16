@@ -1,7 +1,16 @@
-// app/admin/products/[id]/page.tsx
-import { getAdminProductById } from "@/services/admin/products";
-import EditProductForm from "@/components/features/admin/edit-product-form";
-import { productSchema } from "@/services/admin/product-schemas";
+import { getAdminProductById } from '@/services/admin/products';
+import ProductFormPage from '@/components/features/admin/product-form-page';
+import { createServerClient } from '@/lib/db/server';
+import { notFound } from 'next/navigation';
+
+async function getCategories() {
+  const supabase = await createServerClient();
+  const { data } = await supabase
+    .from('categories')
+    .select('id, name')
+    .order('name', { ascending: true });
+  return data ?? [];
+}
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -9,18 +18,12 @@ interface Props {
 
 export default async function EditProductPage({ params }: Props) {
   const { id } = await params;
-  const product = await getAdminProductById(id);
+  const [product, categories] = await Promise.all([
+    getAdminProductById(id).catch(() => null),
+    getCategories(),
+  ]);
 
-  if (!product) return <p>Product not found</p>;
+  if (!product) notFound();
 
-  // Transform Product to match schema
-  const initialData = productSchema.parse({
-    id: product.id,
-    name: product.name,
-    base_price_kes: product.base_price_kes,
-    stock: product.stock,
-    category_id: product.category_id,
-  });
-
-  return <EditProductForm initialData={initialData} />;
+  return <ProductFormPage mode="edit" product={product} categories={categories} />;
 }

@@ -1,75 +1,110 @@
-// services/admin/product.ts
 import { createServerClient } from '@/lib/db/server';
 import { AppError } from '@/errors/base-error';
 import { logger } from '@/lib/logger';
-import { productSchema, createProductSchema } from './product-schemas';
-import { Product } from '@/types/product';
-import { z } from 'zod';
+import { createProductSchema, updateProductSchema } from './product-schemas';
+import type {
+  AdminProduct,
+  AdminProductsResult,
+  GetProductsOptions,
+} from '@/types/product';
+import type { CreateProductInput, UpdateProductInput } from './product-schemas';
 
 export const adminProductService = {
-  async getProducts(page: number, pageSize: number) {
-    logger.debug({ message: 'Fetching admin products', page, pageSize });
-    
-    const supabase = await createServerClient();
+  async getProducts(options: GetProductsOptions = {}): Promise<AdminProductsResult> {
+    const { page = 1, pageSize = 10, search, category, isActive } = options;
+    logger.debug({ message: 'Fetching admin products', page, pageSize, search, category });
 
+    const supabase = await createServerClient();
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const { data, count, error } = await supabase
-      .from("products")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false })
+    let query = supabase
+      .from('products')
+      .select('*, category:categories(id, name)', { count: 'exact' })
+      .order('created_at', { ascending: false })
       .range(from, to);
+
+    if (search) query = query.ilike('name', `%${search}%`);
+    if (category) query = query.eq('category_id', category);
+    if (typeof isActive === 'boolean') query = query.eq('is_active', isActive);
+
+    const { data, count, error } = await query;
 
     if (error) {
       logger.error({ message: 'Failed to fetch admin products', error: error.message });
       throw AppError.database('Failed to fetch products');
     }
 
-    const result = {
-      products: data ?? [],
+    return {
+      products: (data ?? []) as AdminProduct[],
       totalPages: Math.max(1, Math.ceil((count ?? 0) / pageSize)),
+      total: count ?? 0,
     };
-
-    logger.info({ message: 'Admin products fetched successfully', count: result.products.length, totalPages: result.totalPages });
-    return result;
   },
 
-  async getProductById(id: string): Promise<Product> {
+  async getProductById(id: string): Promise<AdminProduct> {
     logger.debug({ message: 'Fetching admin product by ID', productId: id });
-    
     const supabase = await createServerClient();
 
     const { data, error } = await supabase
-      .from("products")
-      .select("*")
-      .eq("id", id)
+      .from('products')
+      .select('*, category:categories(id, name)')
+      .eq('id', id)
       .single();
 
-    if (error) {
-      logger.error({ message: 'Failed to fetch admin product', productId: id, error: error.message });
+    if (error || !data) {
+      logger.error({ message: 'Failed to fetch admin product', productId: id, error: error?.message });
       throw AppError.notFound('Product not found');
     }
 
     logger.info({ message: 'Admin product fetched successfully', productId: id });
-    return data;
+    return data as AdminProduct;
   },
 
-  async updateProduct(id: string, data: z.infer<typeof productSchema>) {
-    logger.debug({ message: 'Updating admin product', productId: id });
-    
-    const parsed = productSchema.parse(data);
+  async createProduct(input: CreateProductInput): Promise<AdminProduct> {
+    logger.debug({ message: 'Creating admin product' });
+    const parsed = createProductSchema.parse(input);
     const supabase = await createServerClient();
 
-    const { error } = await supabase
-      .from("products")
-      .update({
+    const { data, error } = await supabase
+      .from('products')
+      .insert([{
         name: parsed.name,
+        description: parsed.description,
+        slug: parsed.slug,
+        brand: parsed.brand,
         base_price_kes: parsed.base_price_kes,
+        base_price_usd: parsed.base_price_usd,
         stock: parsed.stock,
         category_id: parsed.category_id,
-      })
-      .eq("id", id);
+        images: parsed.images,
+        tags: parsed.tags,
+        is_active: parsed.is_active,
+      }])
+      .select('*, category:categories(id, name)')
+      .single();
+
+    if (error) {
+      logger.error({ message: 'Failed to create admin product', error: error.message });
+      if (error.message.includes('slug')) throw AppError.validation('A product with this slug already exists');
+      throw AppError.database('Failed to create product');
+    }
+
+    logger.info({ message: 'Admin product created successfully', productId: data.id });
+    return data as AdminProduct;
+  },
+
+  async updateProduct(id: string, input: UpdateProductInput): Promise<AdminProduct> {
+    logger.debug({ message: 'Updating admin product', productId: id });
+    const parsed = updateProductSchema.parse(input);
+    const supabase = await createServerClient();
+
+    const { data, error } = await supabase
+      .from('products')
+      .update({ ...parsed, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*, category:categories(id, name)')
+      .single();
 
     if (error) {
       logger.error({ message: 'Failed to update admin product', productId: id, error: error.message });
@@ -77,43 +112,14 @@ export const adminProductService = {
     }
 
     logger.info({ message: 'Admin product updated successfully', productId: id });
-    return true;
+    return data as AdminProduct;
   },
 
-  async createProduct(data: z.infer<typeof createProductSchema>) {
-    logger.debug({ message: 'Creating admin product' });
-    
-    const parsed = createProductSchema.parse(data);
-    const supabase = await createServerClient();
-    
-    const { data: product, error } = await supabase
-      .from("products")
-      .insert([{
-        name: parsed.name,
-        base_price_kes: parsed.base_price_kes,
-        stock: parsed.stock,
-        category_id: parsed.category_id,
-      }])
-      .select()
-      .single();
-
-    if (error) {
-      logger.error({ message: 'Failed to create admin product', error: error.message });
-      throw AppError.database('Failed to create product');
-    }
-
-    logger.info({ message: 'Admin product created successfully', productId: product.id });
-    return product;
-  },
-
-  async deleteProduct(productId: string) {
+  async deleteProduct(productId: string): Promise<void> {
     logger.debug({ message: 'Deleting admin product', productId });
-    
     const supabase = await createServerClient();
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", productId);
+
+    const { error } = await supabase.from('products').delete().eq('id', productId);
 
     if (error) {
       logger.error({ message: 'Failed to delete admin product', productId, error: error.message });
@@ -121,18 +127,12 @@ export const adminProductService = {
     }
 
     logger.info({ message: 'Admin product deleted successfully', productId });
-    return true;
   },
 };
 
-// Export factory function for dependency injection
 export function createAdminProductService() {
   return adminProductService;
 }
 
-// Legacy exports for backward compatibility
-export const getAdminProducts = adminProductService.getProducts;
-export const getAdminProductById = adminProductService.getProductById;
-export const updateAdminProduct = adminProductService.updateProduct;
-export const createAdminProduct = adminProductService.createProduct;
-export const deleteAdminProduct = adminProductService.deleteProduct;
+export const getAdminProductById =
+  adminProductService.getProductById.bind(adminProductService);

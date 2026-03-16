@@ -66,3 +66,44 @@ export interface CategoryStats {
   count:    number;
   avgPrice: number;  // in KES subunits
 }
+
+export interface AdminProduct {
+  id: string;
+  name: string;
+  description: string;
+  slug: string;
+  brand: string | null;
+  category_id: string;
+  category?: { id: string; name: string } | null;
+  base_price_kes: number;
+  base_price_usd: number;
+  stock: number;
+  has_variants: boolean;
+  is_active: boolean;
+  tags: string[];
+  images: { url: string; alt?: string }[];
+  rating: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminProductsResult {
+  products: AdminProduct[];
+  totalPages: number;
+  total: number;
+}
+
+export interface GetProductsOptions {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  category?: string;
+  isActive?: boolean;
+}
+
+export interface ImageItem {
+  url: string;
+  alt?: string;
+  uploading?: boolean;
+  error?: string;
+}
