@@ -73,7 +73,7 @@ export default function OrdersTable({ orders, currentPage, totalPages, filters }
               clearTimeout((window as any).__orderSearchTimer);
               (window as any).__orderSearchTimer = setTimeout(() => pushFilter('search', v), 400);
             }}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
 
@@ -82,7 +82,7 @@ export default function OrdersTable({ orders, currentPage, totalPages, filters }
           <select
             defaultValue={filters.status ?? ''}
             onChange={(e) => pushFilter('status', e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           >
             <option value="">All statuses</option>
             {ORDER_STATUSES.map((s) => (
@@ -99,7 +99,7 @@ export default function OrdersTable({ orders, currentPage, totalPages, filters }
             type="date"
             defaultValue={filters.dateFrom}
             onChange={(e) => pushFilter('dateFrom', e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
 
@@ -109,7 +109,7 @@ export default function OrdersTable({ orders, currentPage, totalPages, filters }
             type="date"
             defaultValue={filters.dateTo}
             onChange={(e) => pushFilter('dateTo', e.target.value)}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
           />
         </div>
 
