@@ -107,3 +107,59 @@ export interface ImageItem {
   uploading?: boolean;
   error?: string;
 }
+
+// Admin order types
+export type OrderStatus =
+  | 'pending'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled';
+
+export interface AdminOrderItem {
+  id: string;
+  product_id: string;
+  product_name: string;
+  variant_name: string | null;
+  quantity: number;
+  unit_price_kes: number;
+  total_kes: number;
+}
+
+export interface AdminOrder {
+  id: string;
+  order_number: string;
+  status: OrderStatus;
+  currency: string;
+  subtotal_kes: number;
+  shipping_fee_kes: number;
+  total_kes: number;
+  shipping_name: string;
+  shipping_phone: string;
+  shipping_line_1: string;
+  shipping_line_2: string | null;
+  shipping_city: string;
+  shipping_county: string | null;
+  shipping_country: string;
+  created_at: string;
+  cancelled_at: string | null;
+  auth_users: {
+    email: string;
+  };
+  order_items?: AdminOrderItem[];
+}
+
+export interface AdminOrdersResult {
+  orders: AdminOrder[];
+  totalPages: number;
+  total: number;
+}
+
+export interface AdminOrderFilters {
+  page: number;
+  pageSize: number;
+  search?: string;
+  status?: OrderStatus | '';
+  dateFrom?: string;
+  dateTo?: string;
+}

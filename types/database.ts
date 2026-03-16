@@ -41,6 +41,7 @@ export type Database = {
       orders: {
         Row: {
           id: string;
+          order_number: string;
           user_id: string;
           status: string;
           currency: string;

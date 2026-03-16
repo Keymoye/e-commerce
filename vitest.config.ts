@@ -12,9 +12,9 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     env: {
       // Variables are loaded above
-      SUPABASE_TEST_URL: process.env.SUPABASE_TEST_URL,
-      SUPABASE_TEST_SERVICE_KEY: process.env.SUPABASE_TEST_SERVICE_KEY,
-      SUPABASE_TEST_ANON_KEY: process.env.SUPABASE_TEST_ANON_KEY,
+      SUPABASE_TEST_URL: process.env.SUPABASE_TEST_URL!,
+      SUPABASE_TEST_SERVICE_KEY: process.env.SUPABASE_TEST_SERVICE_KEY!,
+      SUPABASE_TEST_ANON_KEY: process.env.SUPABASE_TEST_ANON_KEY!,
     },
     coverage: {
       provider: 'v8',
