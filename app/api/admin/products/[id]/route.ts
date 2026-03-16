@@ -7,7 +7,7 @@ import { isAdmin } from '@/lib/auth/permissions';
 import { createAdminProductService } from '@/services/admin/products';
 
 const updateProductSchema = z.object({
-  name: z.string().min(1).optional(),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   base_price_kes: z.number().min(1).optional(),
   base_price_usd: z.number().optional(),
@@ -21,7 +21,7 @@ const updateProductSchema = z.object({
 });
 
 export const GET = withErrorHandler(async (req: NextRequest, ctx: any) => {
-  const { id } = ctx.params as { id: string };
+  const { id } = await ctx.params as { id: string };
   const admin = await isAdmin();
   if (!admin) throw AppError.forbidden('Admin access required');
 
@@ -33,7 +33,7 @@ export const GET = withErrorHandler(async (req: NextRequest, ctx: any) => {
 });
 
 export const PUT = withErrorHandler(async (req: NextRequest, ctx: any) => {
-  const { id } = ctx.params as { id: string };
+  const { id } = await ctx.params as { id: string };
   const admin = await isAdmin();
   if (!admin) throw AppError.forbidden('Admin access required');
 
@@ -49,7 +49,7 @@ export const PUT = withErrorHandler(async (req: NextRequest, ctx: any) => {
 });
 
 export const DELETE = withErrorHandler(async (req: NextRequest, ctx: any) => {
-  const { id } = ctx.params as { id: string };
+  const { id } = await ctx.params as { id: string };
   const admin = await isAdmin();
   if (!admin) throw AppError.forbidden('Admin access required');
 

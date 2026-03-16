@@ -123,6 +123,11 @@ export const adminProductService = {
 
     if (error) {
       logger.error({ message: 'Failed to delete admin product', productId, error: error.message });
+      if (error.message.includes('order_items')) {
+        throw AppError.validation(
+          'This product cannot be deleted because it has existing orders. Set it to Draft instead.'
+        );
+      }
       throw AppError.database('Failed to delete product');
     }
 

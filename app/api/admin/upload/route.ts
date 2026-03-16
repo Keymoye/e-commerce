@@ -3,7 +3,7 @@ import { withErrorHandler } from '@/errors/error-handler';
 import { AppError } from '@/errors/base-error';
 import { logger } from '@/lib/logger';
 import { isAdmin } from '@/lib/auth/permissions';
-import { createServerClient } from '@/lib/db/server';
+import { createAdminSupabase } from '@/lib/db/admin';
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const admin = await isAdmin();
@@ -26,7 +26,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const ext = file.name.split('.').pop() ?? 'jpg';
   const filename = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
-  const supabase = await createServerClient();
+  const supabase = createAdminSupabase();
   const bytes = await file.arrayBuffer();
 
   const { error } = await supabase.storage

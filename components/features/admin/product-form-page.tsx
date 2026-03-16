@@ -108,6 +108,7 @@ export default function ProductFormPage({ mode, product, categories }: Props) {
       name: form.name.trim(),
       description: form.description.trim(),
       base_price_kes: Math.round(form.base_price_kes * 100),
+      base_price_usd: Math.round(form.base_price_kes * 100 / 130), // rough KES->USD
       stock: Math.round(form.stock),
       category_id: form.category_id,
       brand: form.brand.trim(),
